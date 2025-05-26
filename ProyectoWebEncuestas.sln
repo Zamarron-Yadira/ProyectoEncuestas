@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncuestasAPI", "EncuestasAPI\EncuestasAPI.csproj", "{2609852E-4474-47CE-A6CB-C7FC2254FE8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncuestasWeb", "ProyectoWebEncuestas\EncuestasWeb.csproj", "{9DDBC4C9-F748-4130-868F-798F6281F60D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2609852E-4474-47CE-A6CB-C7FC2254FE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2609852E-4474-47CE-A6CB-C7FC2254FE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2609852E-4474-47CE-A6CB-C7FC2254FE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2609852E-4474-47CE-A6CB-C7FC2254FE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DDBC4C9-F748-4130-868F-798F6281F60D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DDBC4C9-F748-4130-868F-798F6281F60D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DDBC4C9-F748-4130-868F-798F6281F60D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DDBC4C9-F748-4130-868F-798F6281F60D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B205384-1631-4443-9A1B-69C786F9BA50}
+	EndGlobalSection
+EndGlobal
