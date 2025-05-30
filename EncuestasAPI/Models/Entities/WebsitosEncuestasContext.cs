@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
-namespace EncuestasAPI.Models;
+namespace EncuestasAPI.Models.Entities;
 
 public partial class WebsitosEncuestasContext : DbContext
 {
@@ -26,7 +26,6 @@ public partial class WebsitosEncuestasContext : DbContext
 
     public virtual DbSet<Usuarios> Usuarios { get; set; }
 
- 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -133,6 +132,7 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Contrasena).HasMaxLength(10);
+            entity.Property(e => e.EsAdmin).HasColumnType("int(11)");
             entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
             entity.Property(e => e.Nombre).HasMaxLength(50);
         });

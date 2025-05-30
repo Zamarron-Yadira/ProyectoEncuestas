@@ -72,7 +72,7 @@ public partial class EncuestasContext : DbContext
 
         modelBuilder.Entity<Preguntas>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.IdPregunta).HasName("PRIMARY");
 
             entity.ToTable("preguntas");
 

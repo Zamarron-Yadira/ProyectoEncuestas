@@ -1,28 +1,37 @@
 ﻿using AutoMapper;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
+using EncuestasAPI.Models.Validators;
 using EncuestasAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class EncuestasController : ControllerBase
 	{
 		private readonly Repository<Encuestas> _encuestaRepo;
 		private readonly Repository<Preguntas> _preguntaRepo;
+		private readonly EstadisticasRepository _estadisticasRepo;
 
 		private readonly IMapper _mapper;
 
+		public EncuestaValidator Validador { get; }
+
 		public EncuestasController(Repository<Encuestas> encuestaRepo,
 		Repository<Preguntas> preguntaRepo,
-		IMapper mapper)
+		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo)
 		{
 			_encuestaRepo = encuestaRepo;
 			_preguntaRepo = preguntaRepo;
+			_estadisticasRepo = estadisticasRepo;
 			_mapper = mapper;
+			Validador = validador;
 		}
 
 		//api/encuestas
@@ -46,10 +55,59 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
-		[HttpPost]
-		public IActionResult CreateEncuesta()
+		[HttpPost("crear")]
+		public IActionResult CreateEncuesta([FromBody] CrearEncuestaDTO dto)
 		{
-			return Ok();
+			if (Validador.Validate(dto, out List<string> errores))
+			{
+				var encuesta = new Encuestas
+				{
+					IdUsuario = dto.IdUsuario,
+					Titulo = dto.Titulo,
+					FechaCreacion = DateTime.Now,
+					Preguntas = dto.Preguntas.Select (P=> new Preguntas
+					{
+						Descripcion = P.Descripcion,
+						NumeroPregunta = P.NumeroPregunta
+					}).ToList()
+				};
+				_encuestaRepo.Insert(encuesta);
+
+				var encuestaDto = new EncuestaDTO
+				{
+					Id = encuesta.Id,
+					IdUsuario = encuesta.IdUsuario,
+					Titulo = encuesta.Titulo,
+					FechaCreacion = encuesta.FechaCreacion
+				};
+				return Ok(new
+				{
+					mensaje = "Encuesta creada correctamente.",
+					encuesta = encuestaDto
+				});
+			}
+			else
+			{
+				return BadRequest(errores);
+			}
 		}
+
+		[Authorize(Roles ="Admin")]
+		[HttpGet("estadisticas/totalencuestas")]
+		public IActionResult GetTotalEncuestas()
+		{
+			return Ok(_estadisticasRepo.GetTotalEncuestasCreadas());
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("estadisticas/totalrespondidas")]
+		public IActionResult GetTotalEncuestasRespondidas()
+		{
+			return Ok(_estadisticasRepo.GetTotalEncuestasRespondidas());
+		}
+		
+
+		//Agregar Signar r: para ver que usuarios estan aplicando las encuestas em ese momento, ademas de ver que encuesta estan aplicando
+		//AGREGAR EDITAR Y ELIMINAR ENCUESTAS
 	}
 }

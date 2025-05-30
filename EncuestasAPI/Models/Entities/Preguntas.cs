@@ -5,7 +5,7 @@ namespace EncuestasAPI.Models.Entities;
 
 public partial class Preguntas
 {
-    public int Id { get; set; }
+    public int IdPregunta { get; set; }
 
     public string Descripcion { get; set; } = null!;
 
