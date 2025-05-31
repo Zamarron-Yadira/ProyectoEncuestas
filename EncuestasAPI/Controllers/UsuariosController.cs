@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EncuestasAPI.Controllers
 {
-	[AllowAnonymous]
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class UsuariosController : ControllerBase
@@ -46,7 +46,43 @@ namespace EncuestasAPI.Controllers
 				return BadRequest(errores);
 			}
 		}
+		[Authorize(Roles = "Admin")]
+		[HttpGet("usuarios")]
+		public IActionResult GetUsuarios()
+		{
+			var usuarios = RepoUsuarios.GetAll();
 
+			var lista = usuarios.Select(u => new UsuarioResumenDTO
+			{
+				Nombre = u.Nombre,
+				FechaRegistro = u.FechaRegistro,
+				EsAdmin = u.EsAdmin == 1
+			}).ToList();
+
+			return Ok(lista);
+		}
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("{id}")]
+		public IActionResult EliminarUsuario(int id)
+		{
+			var usuario = RepoUsuarios.GetId(id);
+			if (usuario == null)
+			{
+				return NotFound(new { mensaje = "Usuario no encontrado." });
+			}
+
+			try
+			{
+				RepoUsuarios.Delete(id);
+				return Ok(new { mensaje = "Usuario eliminado correctamente." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { mensaje = "Error al eliminar el usuario.", detalle = ex.Message });
+			}
+		}
+
+		[AllowAnonymous]
 		[HttpPost("login")]
 		public IActionResult Login(LoginUsuarioDTO dto)
 		{
@@ -58,6 +94,5 @@ namespace EncuestasAPI.Controllers
 			return Ok(token);
 		}
 
-		//AGREGAR: EDITAR CONTRASENA Y EDITAR USUARIO, ELIMINAR USUARIO (OPCIONAL)
 	}
 }

@@ -5,6 +5,7 @@ using EncuestasAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
@@ -13,42 +14,80 @@ namespace EncuestasAPI.Controllers
 	[ApiController]
 	public class RespuestasController : ControllerBase
 	{
-		//AGREGAR RESPUESTA Y EDITAR, VER TODAS LAS RESPUESTAS Y por ID DE PREGUNTA
-		//CHECAR RESPUESTA GETALL
-
-		public RespuestasController(Repository<RespuestaDTO> respuestasRepo, IMapper mapper)
+		public RespuestasController(IMapper mapper, Repository<Detallerespuestas> repoDetalles, Repository<Respuestas> _respuestasRepository)
 		{
-			RespuestasRepo = respuestasRepo;
 			Mapper = mapper;
+			RepoDetalles = repoDetalles;
+			RespuestasRepository = _respuestasRepository;
 		}
 
-
-		//AGREGAR LA RESPUESTA DONDE PIDE EL NOMBRE Y NUM CONTROL
-		public Repository<RespuestaDTO> RespuestasRepo { get; }
 		public IMapper Mapper { get; }
+		public Repository<Detallerespuestas> RepoDetalles { get; }
+		public Repository<Respuestas> RespuestasRepository { get; }
 
-
-
-		[HttpPost("responderEncuesta")] //Aqui pide el nombre y el numero de control
-		public IActionResult ResponderEmcuesta([FromBody] RespuestaDetalleDTO dto)
+		[HttpGet("todas")]
+		public IActionResult GetAll()
 		{
-
-			return Ok();
+			var respuestas = RespuestasRepository.GetAll()
+				.Select(r => new
+				{
+					r.Id,
+					r.NombreAlumno,
+					r.NumControlAlumno,
+					r.FechaAplicacion,
+					Respuestas = r.Detallerespuestas.Select(d => new
+					{
+						d.IdPregunta,
+						d.ValorEvaluacion
+					})
+				});
+			return Ok(respuestas);
 		}
 
-		[HttpPost("responderPregunta")]//Aqui responde cada pregunta
-		public IActionResult ResponderPregunta([FromBody] RespuestaDetalleDTO dto)
+		[HttpPost("registrarInicio")]
+		public IActionResult RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
-			
-			return Ok();
-		}
-		[HttpPost("editarrespuestas")]
-		public IActionResult EditarRespuesta([FromBody] RespuestaDetalleDTO dto)
-		{
-		
-			return Ok();
+			var entidad = Mapper.Map<Respuestas>(dto);
+			entidad.FechaAplicacion = DateTime.Now;
+
+			RespuestasRepository.Insert(entidad);
+
+			return Ok(new
+			{
+				mensaje = "Datos del alumno registrados correctamente.",
+				idRespuesta = entidad.Id
+			});
 		}
 
+
+		//RESPONDER TODAS:
+		[HttpPost("responderPreguntas")]
+		public IActionResult ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
+		{
+			if (dtos == null || dtos.Count == 0)
+			{
+				return BadRequest("No se recibieron respuestas.");
+			}
+
+			foreach (var dto in dtos)
+			{
+				var detalleRespuesta = new Detallerespuestas
+				{
+					IdRespuesta = dto.IdRespuesta,
+					IdPregunta = dto.IdPregunta,
+					ValorEvaluacion = dto.ValorEvaluacion
+				};
+
+				// Guarda cada detalle de respuesta
+				RepoDetalles.Insert(detalleRespuesta);
+			}
+
+			return Ok(new
+			{
+				mensaje = "Respuestas registradas correctamente.",
+				cantidad = dtos.Count
+			});
+		}
 
 	}
 }

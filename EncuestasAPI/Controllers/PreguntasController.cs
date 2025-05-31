@@ -12,6 +12,8 @@ namespace EncuestasAPI.Controllers
 	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
+	//Agregar Signar r: para ver que usuarios estan aplicando las encuestas em ese momento, ademas de ver que encuesta estan aplicando
+
 	public class PreguntasController : ControllerBase
 	{
 		private readonly Repository<Preguntas> _preguntaRepo;
@@ -50,6 +52,25 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
+		[HttpPut("{id}")]
+		public IActionResult EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
+		{
+			var pregunta = _preguntaRepo.GetId(id);
+			if (pregunta == null)
+			{
+				return NotFound("La pregunta no existe.");
+			}
+
+			pregunta.Descripcion = dto.Descripcion;
+			pregunta.NumeroPregunta = dto.NumeroPregunta;
+
+			_preguntaRepo.Update(pregunta);
+			return Ok("Pregunta actualizada correctamente.");
+		}
+		
+		
+
+
 		[Authorize(Roles = "Admin")]
 		[HttpGet("estadisticas/totalpreguntas")]
 		public IActionResult GetTotalPreguntas()
@@ -58,14 +79,14 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[Authorize(Roles = "Admin")]
-		[HttpGet("respuestas-preguntas")]
+		[HttpGet("respuestasxpreguntas")]
 		public ActionResult<List<RespuestasPorPreguntasDTO>> GetRespuestasPorPregunta()
 		{
 			var data = EstadisticasRepo.GetCantidadRespuestasPorPregunta();
 			return Ok(data);
 		}
 
-		//FALTA AGREGAR EL CONTROLLADOR DE RESPUESTAS Y AGREGAR SIGNAL R
-		//AGREGAR EDITAR Y ELIMINAR PREGUNTAS
+		
+
 	}
 }

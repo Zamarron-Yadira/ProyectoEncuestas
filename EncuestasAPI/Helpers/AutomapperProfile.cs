@@ -21,6 +21,7 @@ namespace EncuestasAPI.Helpers
 
 			//Respuestas
 			CreateMap<Respuestas, RespuestaDTO>();
+			CreateMap<RespuestaDTO, Respuestas>();
 			CreateMap<AplicarEncuestaDTO, Respuestas>();
 			CreateMap<RespuestaPreguntaDto, Detallerespuestas>();
 

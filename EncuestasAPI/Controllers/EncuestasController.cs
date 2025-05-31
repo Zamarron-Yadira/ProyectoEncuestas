@@ -10,11 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
+
 	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class EncuestasController : ControllerBase
 	{
+		//Agregar Signar r: para ver que usuarios estan aplicando las encuestas em ese momento, ademas de ver que encuesta estan aplicando
+
 		private readonly Repository<Encuestas> _encuestaRepo;
 		private readonly Repository<Preguntas> _preguntaRepo;
 		private readonly EstadisticasRepository _estadisticasRepo;
@@ -34,7 +37,6 @@ namespace EncuestasAPI.Controllers
 			Validador = validador;
 		}
 
-		//api/encuestas
 		[HttpGet]
 		public IActionResult GetAll()
 		{
@@ -92,6 +94,30 @@ namespace EncuestasAPI.Controllers
 			}
 		}
 
+		[HttpPut("{id}")]
+		public IActionResult EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
+		{
+			var encuesta = _encuestaRepo.GetId(id);
+			if (encuesta == null)
+				return NotFound("La encuesta no existe.");
+
+			encuesta.Titulo = dto.Titulo;
+			_encuestaRepo.Update(encuesta);
+
+			return Ok("Encuesta actualizada correctamente.");
+		}
+
+		[HttpDelete("{id}")]
+		public IActionResult EliminarEncuesta(int id)
+		{
+			var encuesta = _encuestaRepo.GetId(id);
+			if (encuesta == null)
+				return NotFound("La encuesta no existe.");
+
+			_encuestaRepo.Delete(id);
+			return Ok("Encuesta eliminada correctamente.");
+		}
+
 		[Authorize(Roles ="Admin")]
 		[HttpGet("estadisticas/totalencuestas")]
 		public IActionResult GetTotalEncuestas()
@@ -107,7 +133,6 @@ namespace EncuestasAPI.Controllers
 		}
 		
 
-		//Agregar Signar r: para ver que usuarios estan aplicando las encuestas em ese momento, ademas de ver que encuesta estan aplicando
-		//AGREGAR EDITAR Y ELIMINAR ENCUESTAS
+		
 	}
 }
