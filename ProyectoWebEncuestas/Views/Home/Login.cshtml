@@ -1,5 +1,61 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = null;
 }
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="login.css" /> 
+    <!--Luego ajustar y poner los css y fuentes-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-user-circle"></i>
+                <h2>Iniciar Sesión</h2>
+            </div>
+            <form class="login-form">
+                <div class="form-group input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="Usuario" required />
+                </div>
+                <div class="form-group input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required />
+                </div>
+                <button type="submit">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    document.querySelector('.login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        //fetch a la accion login de mi api
+        const response = await fetch("http://localhost:5185/api/usuarios/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("token", data.token);
+            window.location.href = "/Home/Index";  //supuestamente empieza con index
+        } else {
+            alert("Usuario o contraseña incorrectos");
+        }
+    });
+</script>
