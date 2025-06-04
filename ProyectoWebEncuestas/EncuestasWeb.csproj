@@ -15,9 +15,10 @@
     <Folder Include="Areas\Usuarios\Data\" />
     <Folder Include="Areas\Usuarios\Models\" />
     <Folder Include="Areas\Usuarios\Views\" />
-    <Folder Include="Models\" />
     <Folder Include="Controllers\" />
     <Folder Include="Areas\" />
+    <Folder Include="Models\DTOS\" />
+    <Folder Include="Services\" />
     <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
