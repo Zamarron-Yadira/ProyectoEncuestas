@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
 using EncuestasAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
@@ -14,16 +16,19 @@ namespace EncuestasAPI.Controllers
 	[ApiController]
 	public class RespuestasController : ControllerBase
 	{
-		public RespuestasController(IMapper mapper, Repository<Detallerespuestas> repoDetalles, Repository<Respuestas> _respuestasRepository)
+		public RespuestasController(IMapper mapper, Repository<Detallerespuestas> repoDetalles,
+			Repository<Respuestas> _respuestasRepository, EstadisticasHub hub)
 		{
 			Mapper = mapper;
 			RepoDetalles = repoDetalles;
 			RespuestasRepository = _respuestasRepository;
+			Hub = hub;
 		}
 
 		public IMapper Mapper { get; }
 		public Repository<Detallerespuestas> RepoDetalles { get; }
 		public Repository<Respuestas> RespuestasRepository { get; }
+		public EstadisticasHub Hub { get; }
 
 		[HttpGet("todas")]
 		public IActionResult GetAll()
@@ -45,12 +50,14 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPost("registrarInicio")]
-		public IActionResult RegistrarInicio([FromBody] RespuestaDTO dto)
+		public async Task<IActionResult> RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
 			var entidad = Mapper.Map<Respuestas>(dto);
 			entidad.FechaAplicacion = DateTime.Now;
 
 			RespuestasRepository.Insert(entidad);
+
+			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok(new
 			{
@@ -62,7 +69,7 @@ namespace EncuestasAPI.Controllers
 
 		//RESPONDER TODAS:
 		[HttpPost("responderPreguntas")]
-		public IActionResult ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
+		public async Task<IActionResult> ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
 		{
 			if (dtos == null || dtos.Count == 0)
 			{
@@ -81,6 +88,7 @@ namespace EncuestasAPI.Controllers
 				// Guarda cada detalle de respuesta
 				RepoDetalles.Insert(detalleRespuesta);
 			}
+			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok(new
 			{

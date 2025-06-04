@@ -7,10 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\Usuarios\Controllers\" />
+    <Folder Include="Areas\Usuarios\Data\" />
+    <Folder Include="Areas\Usuarios\Models\" />
+    <Folder Include="Areas\Usuarios\Views\" />
     <Folder Include="Models\" />
     <Folder Include="Controllers\" />
-    <Folder Include="Views\" />
+    <Folder Include="Areas\" />
+    <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
 </Project>

@@ -16,6 +16,13 @@ namespace EncuestasAPI.Repositories
 			return Context.Encuestas.Count();
 		}
 
+		public int GetTotalEncuestasSinResponder()
+		{
+			return Context.Encuestas
+				.Count(e => !Context.Respuestas.Any(r => r.IdEncuesta == e.Id));
+		}
+
+
 		public int GetTotalEncuestasRespondidas()
 		{
 			return Context.Respuestas.Count();
@@ -47,5 +54,9 @@ namespace EncuestasAPI.Repositories
 			return resultado;
 		}
 
+
+		//USUARIOS RESPONDIENDO:
+
+		
 	}
 }
