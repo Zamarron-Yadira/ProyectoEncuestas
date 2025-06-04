@@ -14,8 +14,7 @@ namespace EncuestasAPI.Controllers
 	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
-	//Agregar Signar r: para ver que usuarios estan aplicando las encuestas em ese momento, ademas de ver que encuesta estan aplicando
-
+	
 	public class PreguntasController : ControllerBase
 	{
 		private readonly Repository<Preguntas> _preguntaRepo;
@@ -24,17 +23,17 @@ namespace EncuestasAPI.Controllers
 
 		public EncuestaValidator Validador { get; }
 		public EstadisticasRepository EstadisticasRepo { get; }
-		public EstadisticasHub Hub { get; }
+		//public EstadisticasHub Hub { get; }
 
 		public PreguntasController(Repository<Preguntas> preguntaRepo,
 		IMapper mapper, EncuestaValidator validador,  
-		EstadisticasRepository estadisticasRepo, EstadisticasHub hub)
+		EstadisticasRepository estadisticasRepo)
 		{
 			_preguntaRepo = preguntaRepo;
 			_mapper = mapper;
 			Validador = validador;
 			EstadisticasRepo = estadisticasRepo;
-			Hub = hub;
+		//	Hub = hub;
 		}
 
 		[HttpGet]
@@ -58,7 +57,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
+		public IActionResult EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
 		{
 			var pregunta = _preguntaRepo.GetId(id);
 			if (pregunta == null)
@@ -70,7 +69,7 @@ namespace EncuestasAPI.Controllers
 			pregunta.NumeroPregunta = dto.NumeroPregunta;
 
 			_preguntaRepo.Update(pregunta);
-			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok("Pregunta actualizada correctamente.");
 		}

@@ -17,18 +17,18 @@ namespace EncuestasAPI.Controllers
 	public class RespuestasController : ControllerBase
 	{
 		public RespuestasController(IMapper mapper, Repository<Detallerespuestas> repoDetalles,
-			Repository<Respuestas> _respuestasRepository, EstadisticasHub hub)
+			Repository<Respuestas> _respuestasRepository)
 		{
 			Mapper = mapper;
 			RepoDetalles = repoDetalles;
 			RespuestasRepository = _respuestasRepository;
-			Hub = hub;
+			//Hub = hub;
 		}
 
 		public IMapper Mapper { get; }
 		public Repository<Detallerespuestas> RepoDetalles { get; }
 		public Repository<Respuestas> RespuestasRepository { get; }
-		public EstadisticasHub Hub { get; }
+		//public EstadisticasHub Hub { get; }
 
 		[HttpGet("todas")]
 		public IActionResult GetAll()
@@ -50,14 +50,14 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPost("registrarInicio")]
-		public async Task<IActionResult> RegistrarInicio([FromBody] RespuestaDTO dto)
+		public IActionResult RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
 			var entidad = Mapper.Map<Respuestas>(dto);
 			entidad.FechaAplicacion = DateTime.Now;
 
 			RespuestasRepository.Insert(entidad);
 
-			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok(new
 			{
@@ -69,7 +69,7 @@ namespace EncuestasAPI.Controllers
 
 		//RESPONDER TODAS:
 		[HttpPost("responderPreguntas")]
-		public async Task<IActionResult> ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
+		public IActionResult ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
 		{
 			if (dtos == null || dtos.Count == 0)
 			{
@@ -88,7 +88,7 @@ namespace EncuestasAPI.Controllers
 				// Guarda cada detalle de respuesta
 				RepoDetalles.Insert(detalleRespuesta);
 			}
-			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok(new
 			{
