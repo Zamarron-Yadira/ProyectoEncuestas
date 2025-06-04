@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
 using EncuestasAPI.Models.Validators;
@@ -6,6 +7,7 @@ using EncuestasAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EncuestasAPI.Controllers
 {
@@ -22,14 +24,17 @@ namespace EncuestasAPI.Controllers
 
 		public EncuestaValidator Validador { get; }
 		public EstadisticasRepository EstadisticasRepo { get; }
+		public EstadisticasHub Hub { get; }
 
 		public PreguntasController(Repository<Preguntas> preguntaRepo,
-		IMapper mapper, EncuestaValidator validador,  EstadisticasRepository estadisticasRepo)
+		IMapper mapper, EncuestaValidator validador,  
+		EstadisticasRepository estadisticasRepo, EstadisticasHub hub)
 		{
 			_preguntaRepo = preguntaRepo;
 			_mapper = mapper;
 			Validador = validador;
 			EstadisticasRepo = estadisticasRepo;
+			Hub = hub;
 		}
 
 		[HttpGet]
@@ -53,7 +58,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
+		public async Task<IActionResult> EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
 		{
 			var pregunta = _preguntaRepo.GetId(id);
 			if (pregunta == null)
@@ -65,6 +70,8 @@ namespace EncuestasAPI.Controllers
 			pregunta.NumeroPregunta = dto.NumeroPregunta;
 
 			_preguntaRepo.Update(pregunta);
+			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
 			return Ok("Pregunta actualizada correctamente.");
 		}
 		
@@ -84,9 +91,7 @@ namespace EncuestasAPI.Controllers
 		{
 			var data = EstadisticasRepo.GetCantidadRespuestasPorPregunta();
 			return Ok(data);
-		}
-
-		
+		}		
 
 	}
 }

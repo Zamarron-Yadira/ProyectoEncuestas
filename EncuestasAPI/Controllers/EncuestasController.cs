@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
 using EncuestasAPI.Models.Validators;
@@ -6,6 +7,7 @@ using EncuestasAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
@@ -25,14 +27,17 @@ namespace EncuestasAPI.Controllers
 		private readonly IMapper _mapper;
 
 		public EncuestaValidator Validador { get; }
+		public IHubContext<EstadisticasHub> Hub { get; }
 
 		public EncuestasController(Repository<Encuestas> encuestaRepo,
 		Repository<Preguntas> preguntaRepo,
-		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo)
+		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo,
+		IHubContext<EstadisticasHub> hub)
 		{
 			_encuestaRepo = encuestaRepo;
 			_preguntaRepo = preguntaRepo;
 			_estadisticasRepo = estadisticasRepo;
+			Hub = hub;
 			_mapper = mapper;
 			Validador = validador;
 		}
@@ -58,7 +63,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPost("crear")]
-		public IActionResult CreateEncuesta([FromBody] CrearEncuestaDTO dto)
+		public async Task<IActionResult> CreateEncuesta([FromBody] CrearEncuestaDTO dto)
 		{
 			if (Validador.Validate(dto, out List<string> errores))
 			{
@@ -84,6 +89,9 @@ namespace EncuestasAPI.Controllers
 					Titulo = encuesta.Titulo,
 					FechaCreacion = encuesta.FechaCreacion
 				};
+
+				await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
 				return Ok(new
 				{
 					mensaje = "Encuesta creada correctamente.",
@@ -97,7 +105,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
+		public async Task<IActionResult> EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
 		{
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
@@ -110,12 +118,14 @@ namespace EncuestasAPI.Controllers
 			encuesta.Titulo = dto.Titulo;
 			_encuestaRepo.Update(encuesta);
 
+			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
 			return Ok("Encuesta actualizada correctamente.");
 		}
 
 
 		[HttpDelete("{id}")]
-		public IActionResult EliminarEncuesta(int id)
+		public async Task<IActionResult> EliminarEncuesta(int id)
 		{
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
@@ -126,6 +136,9 @@ namespace EncuestasAPI.Controllers
 				return Forbid("No tienes permiso para eliminar esta encuesta.");
 
 			_encuestaRepo.Delete(id);
+
+			await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
 			return Ok("Encuesta eliminada correctamente.");
 		}
 
@@ -143,8 +156,13 @@ namespace EncuestasAPI.Controllers
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasRespondidas());
 		}
-		
+		[Authorize(Roles = "Admin")]
+		[HttpGet("estadisticas/totalnorespondidas")]
+		public IActionResult GetTotalEncuestasSinResponder ()
+		{
+			return Ok(_estadisticasRepo.GetTotalEncuestasSinResponder());
+		}
 
-		
+
 	}
 }

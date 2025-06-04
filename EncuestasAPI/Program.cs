@@ -1,9 +1,11 @@
 using EncuestasAPI.Helpers;
+using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.Entities;
 using EncuestasAPI.Models.Validators;
 using EncuestasAPI.Repositories;
 using EncuestasAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -40,7 +42,7 @@ builder.Services.AddDbContext<EncuestasContext>
     );
 
 builder.Services.AddAutoMapper(typeof(AutomapperProfile));
-
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -107,5 +109,7 @@ app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<EstadisticasHub>("/hubs/estadisticas");
+app.MapHub<EncuestasHub>("/hubs/encuestas");
 app.UseFileServer();
 app.Run();
