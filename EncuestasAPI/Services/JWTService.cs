@@ -43,7 +43,7 @@ namespace EncuestasAPI.Services
 					audience: Configuration["Jwt:Audience"],
 					claims: claims,
 					notBefore: DateTime.UtcNow,
-					expires: DateTime.UtcNow.AddMinutes(10), // Expira en 30 minutos
+					expires: DateTime.UtcNow.AddMinutes(30), // Expira en 30 minutos
 					signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
 						System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256)
 					);

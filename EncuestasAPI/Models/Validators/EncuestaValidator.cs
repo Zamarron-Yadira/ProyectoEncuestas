@@ -25,7 +25,8 @@ namespace EncuestasAPI.Models.Validators
 			{
 				errores.Add("El nombre de usuario debe tener una longitud máxima de 150 carácteres.");
 			}
-			else if (dto.Preguntas.Count > 10)
+			
+			if (dto.Preguntas.Count > 10)
 			{
 				errores.Add("Las preguntas deben de ser una cantidad máxima de 10 preguntas por encuesta.");
 			}

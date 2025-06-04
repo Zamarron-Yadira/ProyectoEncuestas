@@ -71,6 +71,10 @@ namespace EncuestasAPI.Controllers
 				return NotFound(new { mensaje = "Usuario no encontrado." });
 			}
 
+			var currentId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+			if (id == currentId)
+				return BadRequest("No puedes eliminar tu propio usuario.");
+
 			try
 			{
 				RepoUsuarios.Delete(id);

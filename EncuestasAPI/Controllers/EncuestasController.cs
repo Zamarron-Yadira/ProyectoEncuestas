@@ -62,9 +62,11 @@ namespace EncuestasAPI.Controllers
 		{
 			if (Validador.Validate(dto, out List<string> errores))
 			{
+				var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+
 				var encuesta = new Encuestas
 				{
-					IdUsuario = dto.IdUsuario,
+					IdUsuario = idUsuario,
 					Titulo = dto.Titulo,
 					FechaCreacion = DateTime.Now,
 					Preguntas = dto.Preguntas.Select (P=> new Preguntas
@@ -101,11 +103,16 @@ namespace EncuestasAPI.Controllers
 			if (encuesta == null)
 				return NotFound("La encuesta no existe.");
 
+			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+			if (encuesta.IdUsuario != idUsuario)
+				return Forbid("No tienes permiso para editar esta encuesta.");
+
 			encuesta.Titulo = dto.Titulo;
 			_encuestaRepo.Update(encuesta);
 
 			return Ok("Encuesta actualizada correctamente.");
 		}
+
 
 		[HttpDelete("{id}")]
 		public IActionResult EliminarEncuesta(int id)
@@ -114,9 +121,14 @@ namespace EncuestasAPI.Controllers
 			if (encuesta == null)
 				return NotFound("La encuesta no existe.");
 
+			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+			if (encuesta.IdUsuario != idUsuario)
+				return Forbid("No tienes permiso para eliminar esta encuesta.");
+
 			_encuestaRepo.Delete(id);
 			return Ok("Encuesta eliminada correctamente.");
 		}
+
 
 		[Authorize(Roles ="Admin")]
 		[HttpGet("estadisticas/totalencuestas")]
