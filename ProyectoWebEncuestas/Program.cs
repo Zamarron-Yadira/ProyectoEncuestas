@@ -27,3 +27,32 @@ app.MapControllerRoute(
 );
 app.MapDefaultControllerRoute();
 app.Run();
+
+
+/*
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+	app.UseDeveloperExceptionPage();
+}
+else
+{
+	app.UseExceptionHandler("/Error");
+}
+
+app.UseStaticFiles();
+
+app.MapRazorPages();
+app.MapGet("/", context =>
+{
+	context.Response.Redirect("/Login");
+	return Task.CompletedTask;
+});
+
+app.Run();
+*/

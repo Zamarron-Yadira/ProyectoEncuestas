@@ -41,19 +41,19 @@
 
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        //fetch a la accion login de mi api
+
         const response = await fetch("http://localhost:5185/api/usuarios/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ nombre: username, contrasena: password })
         });
 
         if (response.ok) {
             const data = await response.json();
             localStorage.setItem("token", data.token);
-            window.location.href = "/Home/Index";  //supuestamente empieza con index
+            window.location.href = "/Home/Index"; // tras entrar, muestre index por mientras
         } else {
             alert("Usuario o contraseña incorrectos");
         }
