@@ -23,17 +23,18 @@ namespace EncuestasAPI.Controllers
 
 		public EncuestaValidator Validador { get; }
 		public EstadisticasRepository EstadisticasRepo { get; }
-		//public EstadisticasHub Hub { get; }
+
+		private readonly IHubContext<EstadisticasHub> _hub;
 
 		public PreguntasController(Repository<Preguntas> preguntaRepo,
 		IMapper mapper, EncuestaValidator validador,  
-		EstadisticasRepository estadisticasRepo)
+		EstadisticasRepository estadisticasRepo, IHubContext<EstadisticasHub> hub)
 		{
 			_preguntaRepo = preguntaRepo;
 			_mapper = mapper;
 			Validador = validador;
 			EstadisticasRepo = estadisticasRepo;
-		//	Hub = hub;
+		  _hub = hub;
 		}
 
 		[HttpGet]
@@ -57,7 +58,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
+		public async Task <IActionResult> EditarPregunta(int id, [FromBody] EditarPreguntaDTO dto)
 		{
 			var pregunta = _preguntaRepo.GetId(id);
 			if (pregunta == null)
@@ -69,7 +70,7 @@ namespace EncuestasAPI.Controllers
 			pregunta.NumeroPregunta = dto.NumeroPregunta;
 
 			_preguntaRepo.Update(pregunta);
-			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok("Pregunta actualizada correctamente.");
 		}

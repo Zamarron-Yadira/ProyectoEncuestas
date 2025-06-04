@@ -90,6 +90,10 @@ namespace EncuestasAPI.Controllers
 		[HttpPost("login")]
 		public IActionResult Login(LoginUsuarioDTO dto)
 		{
+			if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Contrasena))
+			{
+				return BadRequest("El nombre de usuario y contraseña son obligatorios.");
+			}
 			var token = Service.GenerarToken(dto);
 			if (token == null)
 			{

@@ -26,16 +26,20 @@ namespace EncuestasAPI.Controllers
 		private readonly IMapper _mapper;
 
 		public EncuestaValidator Validador { get; }
+		private readonly IHubContext<EstadisticasHub> _hub;
+
 		public EncuestasController(Repository<Encuestas> encuestaRepo,
 		Repository<Preguntas> preguntaRepo,
-		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo)
+		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo,
+		IHubContext<EstadisticasHub> hub)
 		{
 			_encuestaRepo = encuestaRepo;
 			_preguntaRepo = preguntaRepo;
 			_estadisticasRepo = estadisticasRepo;
-			//Hub = hub;
+			_hub = hub;
 			_mapper = mapper;
 			Validador = validador;
+			_hub = hub;
 		}
 
 		[HttpGet]
@@ -59,7 +63,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPost("crear")]
-		public IActionResult CreateEncuesta([FromBody] CrearEncuestaDTO dto)
+		public async Task<IActionResult> CreateEncuesta([FromBody] CrearEncuestaDTO dto)
 		{
 			if (Validador.Validate(dto, out List<string> errores))
 			{
@@ -86,7 +90,7 @@ namespace EncuestasAPI.Controllers
 					FechaCreacion = encuesta.FechaCreacion
 				};
 
-				//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+				await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 				return Ok(new
 				{
@@ -101,7 +105,7 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
+		public async Task<IActionResult> EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
 		{
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
@@ -114,14 +118,14 @@ namespace EncuestasAPI.Controllers
 			encuesta.Titulo = dto.Titulo;
 			_encuestaRepo.Update(encuesta);
 
-			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok("Encuesta actualizada correctamente.");
 		}
 
 
 		[HttpDelete("{id}")]
-		public IActionResult EliminarEncuesta(int id)
+		public async Task <IActionResult> EliminarEncuesta(int id)
 		{
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
@@ -133,7 +137,7 @@ namespace EncuestasAPI.Controllers
 
 			_encuestaRepo.Delete(id);
 
-			//await Hub.Clients.All.SendAsync("ActualizarEstadisticas");
+			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok("Encuesta eliminada correctamente.");
 		}
