@@ -7,6 +7,7 @@ using EncuestasAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
@@ -95,11 +96,17 @@ namespace EncuestasAPI.Controllers
 				return BadRequest("El nombre de usuario y contraseña son obligatorios.");
 			}
 			var token = Service.GenerarToken(dto);
+			var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
+
 			if (token == null)
 			{
 				return Unauthorized("El usuario o contraseña son incorrectos");
 			}
-			return Ok(token);
+			return Ok(new
+			{
+				token,
+				esAdmin = usuario.EsAdmin
+			});
 		}
 
 	}

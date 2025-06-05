@@ -7,19 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\" />
-    <Folder Include="Areas\Usuarios\Controllers\" />
-    <Folder Include="Areas\Usuarios\Data\" />
-    <Folder Include="Areas\Usuarios\Models\" />
-    <Folder Include="Areas\Usuarios\Views\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Areas\" />
-    <Folder Include="Models\DTOS\" />
-    <Folder Include="Services\" />
-    <Folder Include="Views\Shared\" />
+    <Compile Remove="Areas\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Services\**" />
+    <Compile Remove="Views\Shared\**" />
+    <Content Remove="Areas\**" />
+    <Content Remove="Models\**" />
+    <Content Remove="Services\**" />
+    <Content Remove="Views\Shared\**" />
+    <EmbeddedResource Remove="Areas\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Views\Shared\**" />
+    <None Remove="Areas\**" />
+    <None Remove="Models\**" />
+    <None Remove="Services\**" />
+    <None Remove="Views\Shared\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Admin\" />
+    <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

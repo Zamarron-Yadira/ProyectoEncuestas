@@ -42,20 +42,36 @@
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        const response = await fetch("http://localhost:5185/api/usuarios/login", {
+        const esAdmin = 0;
+
+        const response = await fetch("https://localhost:7297/api/usuarios/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ nombre: username, contrasena: password })
+            body: JSON.stringify({
+                nombre: username,
+                contrasena: password,
+                esAdmin: esAdmin
+            })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
-            window.location.href = "/Home/Index"; // tras entrar, muestre index por mientras
+            if (response.ok) {
+        const data = await response.json();
+        console.log("Login success:", data);
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("esAdmin", data.esAdmin);
+//si es que entra y genera el token, se establece y guarda este, al igual
+            //que identificar si el ingresado esAdmin, o no, para ingresar a la vista correspondiente
+
+        if (data.esAdmin === 1) {
+            window.location.href = "/Admin/Index";
         } else {
+            window.location.href = "/Users/Index";
+        }
+    } else {
             alert("Usuario o contraseña incorrectos");
         }
     });
-</script>
+</script>  

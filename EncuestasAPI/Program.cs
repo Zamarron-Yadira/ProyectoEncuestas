@@ -86,14 +86,16 @@ builder.Services.AddScoped(typeof(EncuestaValidator));
 
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowAllOrigins",
-		builder =>
+	options.AddPolicy("AllowFrontend",
+		policy =>
 		{
-			builder.AllowAnyOrigin()
-				   .AllowAnyMethod()
-				   .AllowAnyHeader();
+			policy
+				.WithOrigins("https://localhost:7058")
+				.AllowAnyMethod()
+				.AllowAnyHeader()
+				.AllowCredentials();
 		});
-});	
+});
 
 var app = builder.Build();
 
@@ -103,9 +105,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

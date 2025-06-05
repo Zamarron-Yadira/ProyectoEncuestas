@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+/*using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -27,32 +27,22 @@ app.MapControllerRoute(
 );
 app.MapDefaultControllerRoute();
 app.Run();
+*/
 
-
-/*
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-	app.UseDeveloperExceptionPage();
-}
-else
-{
-	app.UseExceptionHandler("/Error");
-}
-
 app.UseStaticFiles();
+app.UseRouting();
 
-app.MapRazorPages();
-app.MapGet("/", context =>
-{
-	context.Response.Redirect("/Login");
-	return Task.CompletedTask;
-});
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+	name: "default",
+	pattern: "{controller=Home}/{action=Login}/{id?}");
 
 app.Run();
-*/
