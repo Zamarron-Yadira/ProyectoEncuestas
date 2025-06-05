@@ -62,6 +62,16 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
+		[HttpGet("usuario/{idUsuario}")]
+		public IActionResult GetByUsuario(int idUsuario)
+		{
+			Console.WriteLine($"🔍 Consultando encuestas del usuario {idUsuario}");
+
+			var encuestas = _encuestaRepo.GetAll().Where(e=> e.IdUsuario == idUsuario).ToList();
+			var dto = _mapper.Map<IEnumerable<EncuestaDTO>>(encuestas);
+			return Ok(dto);
+		}
+
 		[HttpPost("crear")]
 		public async Task<IActionResult> CreateEncuesta([FromBody] CrearEncuestaDTO dto)
 		{

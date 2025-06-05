@@ -8,5 +8,10 @@ namespace EncuestasWeb.Controllers
 		{
 			return View();
 		}
+
+		public IActionResult VerMisEncuestas()
+		{
+			return View();
+		}
 	}
 }

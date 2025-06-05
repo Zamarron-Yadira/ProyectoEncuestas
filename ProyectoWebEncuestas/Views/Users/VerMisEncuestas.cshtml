@@ -1,10 +1,9 @@
-﻿
-    @{
-        Layout = "_Layout";
-    }
-	<main>
+﻿@{
+    Layout = "_Layout";
+}
+<main>
     <div class="container">
-        <h1>Encuestas Existentes</h1>
+
         <!-- Filtro por fecha -->
         <section class="filter-section">
             <label for="fechaFiltro" class="filter-label">Filtrar por fecha:</label>
@@ -13,22 +12,23 @@
 
         <div class="survey-list" id="encuestasContainer">
 
+        </div>
 
-		</div>
- 
-		<a href="/Users/AgregarEncuesta" class="add-button" title="Agregar nueva encuesta">+</a>
+        <a href="/Users/AgregarEncuesta" class="add-button" title="Agregar nueva encuesta">+</a>
+
 
     </div>
-	
+
 </main>
-  
 
-      <script>
+<script>
     const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("idUsuario");
 
-    async function cargarEncuestas() {
+    async function cargarMisEncuestas() {
+
         try {
-            const response = await fetch("https://localhost:7297/api/encuestas/encuestas", {
+            const response = await fetch(`https://localhost:7297/api/encuestas/usuario/${userId}`, {
                 method: "GET",
                 headers: {
                     "Authorization": "Bearer " + token
@@ -36,19 +36,22 @@
             });
 
             if (!response.ok) {
-                throw new Error("No se pudieron cargar las encuestas");
+                throw new Error("No se pudieron cargar tus encuestas");
             }
 
             const encuestas = await response.json();
+
             const container = document.getElementById("encuestasContainer");
             container.innerHTML = "";
 
-            encuestas.forEach(encuesta => {
+            const listaEncuestas = Array.isArray(encuestas) ? encuestas : [encuestas];
+
+            listaEncuestas.forEach(encuesta => {
                 const card = document.createElement("div");
                 card.className = "card-surv";
 
                 card.innerHTML = `
-                    <a href="Encuesta.html?id=${encuesta.id}" class="survey-card">
+                    <a href="/Users/ResponderEncuesta?id=${encuesta.id}" class="survey-card">
                         <div class="survey-info">
                             <strong>${encuesta.titulo}</strong><br />
                             <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
@@ -58,12 +61,12 @@
 
                 container.appendChild(card);
             });
+
         } catch (error) {
             console.error(error);
-            alert("Error al cargar las encuestas");
+            alert("Error al cargar tus encuestas.");
         }
     }
 
-    window.addEventListener("DOMContentLoaded", cargarEncuestas);
+    window.addEventListener("DOMContentLoaded", cargarMisEncuestas);
 </script>
-

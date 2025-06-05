@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="~/assets//styles.css" />
+</head>
+<body>
+    <!-- Barra superior con título y botón de menú -->
+    <header class="header-bar">
+        <h1 class="page-title">Lista de Encuestas</h1>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </header>
+
+    <div class="menu-modal" id="menuModal">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="user-icon">👤</div>
+                <span class="user-name" id="userName">Usuario</span>
+                <span class="close-menu" onclick="toggleMenu()">×</span>
+            </div>
+            <div class="menu-links">
+                <a href="/Users/Index">Inicio</a>
+                <a href="#" onclick="goToMisEncuestas()">Mis Encuestas</a>
+            </div>
+            <a href="/Home/Login" class="logout-link">Cerrar sesión</a>
+        </div>
+    </div>
+    @RenderBody()
+
+
+
+    <script>
+        function toggleMenu() {
+            const modal = document.getElementById('menuModal');
+            modal.classList.toggle('active');
+        }
+
+        function goToMisEncuestas() {
+            const id = localStorage.getItem("idUsuario");
+            if (!id) {
+                alert("No se encontró el ID del usuario");
+                return;
+            }
+            window.location.href = `/Users/VerMisEncuestas`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem("token");
+            const userName = localStorage.getItem("nombre");
+
+            if (!token) {
+                alert("Token no encontrado. Inicia sesión.");
+                window.location.href = "/Home/Login";
+                return;
+            }
+
+            if (userName) {
+                document.getElementById("userName").textContent = userName;
+            }
+        });
+    </script>
+
+
+            </body>
+            </html>
+
+                
