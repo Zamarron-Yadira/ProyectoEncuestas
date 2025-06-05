@@ -89,7 +89,7 @@ namespace EncuestasAPI.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("login")]
-		public IActionResult Login(LoginUsuarioDTO dto)
+		public IActionResult Login([FromBody] LoginUsuarioDTO dto)
 		{
 			if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Contrasena))
 			{
@@ -102,10 +102,17 @@ namespace EncuestasAPI.Controllers
 			{
 				return Unauthorized("El usuario o contraseña son incorrectos");
 			}
+			if (usuario == null)
+			{
+				return Unauthorized("No se encontró el usuario");
+			}
 			return Ok(new
 			{
 				token,
-				esAdmin = usuario.EsAdmin
+				esAdmin = usuario.EsAdmin,
+				Id = usuario.Id,
+				nombre = usuario.Nombre
+
 			});
 		}
 

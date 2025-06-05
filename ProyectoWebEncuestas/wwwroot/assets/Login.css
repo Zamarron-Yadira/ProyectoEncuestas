@@ -1,0 +1,101 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body, html {
+  height: 100%;
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page {
+  width: 100%;
+  padding: 20px;
+}
+
+.login-box {
+  max-width: 400px;
+  margin: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 30px 25px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login-header i {
+  font-size: 60px;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.login-header h2 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.input-icon {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-icon i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 16px;
+}
+
+.input-icon input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-icon input:focus {
+  border-color: #007bff;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .login-box {
+    padding: 25px 20px;
+  }
+
+  .login-header h2 {
+    font-size: 1.5rem;
+  }
+}

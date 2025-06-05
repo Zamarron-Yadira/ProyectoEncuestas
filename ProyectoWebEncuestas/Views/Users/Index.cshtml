@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index Usuario</title>
+    <link rel="stylesheet" href="~/assets//styles.css" />
+</head>
+<body>
+    <!-- Barra superior con título y botón de menú -->
+    <header class="header-bar">
+        <h1 class="page-title">Lista de Encuestas</h1>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </header>
+
+    <div class="menu-modal" id="menuModal">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="user-icon">👤</div>
+				 <span class="user-name" id="userName">Usuario</span>
+                <span class="close-menu" onclick="toggleMenu()">×</span>
+            </div>
+            <div class="menu-links">
+                <a href="/Home/Login">Inicio</a>
+                <a href="#" onclick="goToMisEncuestas()">Mis Encuestas</a>
+            </div>
+            <a href="/Home/Login" class="logout-link">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Filtro por fecha -->
+        <section class="filter-section">
+            <label for="fechaFiltro" class="filter-label">Filtrar por fecha:</label>
+            <input type="date" id="fechaFiltro" />
+        </section>
+
+        <div class="survey-list" id="encuestasContainer">
+            <div class="card-surv">
+                <a href="Encuesta.html" class="survey-card">
+                    <div class="survey-info">
+                        <strong>Encuesta de Satisfacción</strong><br />
+                        <small>Creada por Ana Gómez - 25/05/2025</small>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botón flotante para agregar nueva encuesta -->
+    <a href="AgregarEncuesta.html" class="add-button" title="Agregar nueva encuesta">+</a>
+
+    <script>
+        function toggleMenu() {
+            const modal = document.getElementById('menuModal');
+            modal.classList.toggle('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem("token");
+            const userName = localStorage.getItem("nombre");
+
+            if (!token) {
+                alert("Token no encontrado. Inicia sesión.");
+                window.location.href = "/Home/Login";
+                return;
+            }
+
+            if (userName) {
+                document.getElementById("userName").textContent = userName;
+            }
+
+            try {
+                const response = await fetch("https://localhost:7297/api/encuestas/encuestas", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("No se pudieron cargar las encuestas");
+                }
+
+                const encuestas = await response.json();
+                const container = document.getElementById("encuestasContainer");
+                container.innerHTML = "";
+
+                encuestas.forEach(encuesta => {
+                    const card = document.createElement("div");
+                    card.className = "card-surv";
+
+                    card.innerHTML = `
+                        <a href="Encuesta.html?id=${encuesta.id}" class="survey-card">
+                            <div class="survey-info">
+                                <strong>${encuesta.titulo}</strong><br />
+                                <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
+                            </div>
+                        </a>
+                    `;
+
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Error al cargar las encuestas");
+            }
+        });
+
+             function goToMisEncuestas() {
+            const id = localStorage.getItem("idUsuario");
+            if (!id) {
+                alert("No se encontró el ID del usuario");
+                return;
+            }
+            window.location.href = `/Users/VerMisEncuestas?id=${id}`;
+        }
+    </script>
+</body>
+</html>

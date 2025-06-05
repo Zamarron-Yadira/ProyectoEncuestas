@@ -8,7 +8,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="login.css" /> 
+    <link rel="stylesheet" href="~/assets/Login.css" /> 
     <!--Luego ajustar y poner los css y fuentes-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
@@ -62,7 +62,9 @@
 
         localStorage.setItem("token", data.token);
         localStorage.setItem("esAdmin", data.esAdmin);
-//si es que entra y genera el token, se establece y guarda este, al igual
+        localStorage.setItem("nombre", data.nombre);
+          localStorage.setItem("idUsuario", data.Id);
+    //si es que entra y genera el token, se establece y guarda este, al igual
             //que identificar si el ingresado esAdmin, o no, para ingresar a la vista correspondiente
 
         if (data.esAdmin === 1) {
@@ -74,4 +76,4 @@
             alert("Usuario o contraseña incorrectos");
         }
     });
-</script>  
+</script> 

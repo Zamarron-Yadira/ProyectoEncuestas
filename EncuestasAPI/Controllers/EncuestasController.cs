@@ -42,7 +42,7 @@ namespace EncuestasAPI.Controllers
 			_hub = hub;
 		}
 
-		[HttpGet]
+		[HttpGet("encuestas")]
 		public IActionResult GetAll()
 		{
 			var encuestas = _encuestaRepo.GetAll();
