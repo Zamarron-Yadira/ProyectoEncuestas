@@ -40,7 +40,7 @@ namespace EncuestasAPI.Controllers
 		[HttpGet]
 		public IActionResult GetAll()
 		{
-			var preguntas = _preguntaRepo.GetAll().OrderBy(x=> x.NumeroPregunta);
+			var preguntas = _preguntaRepo.GetAll();
 			var dto = _mapper.Map<IEnumerable<PreguntaDTO>>(preguntas);
 			return Ok(dto);
 		}
