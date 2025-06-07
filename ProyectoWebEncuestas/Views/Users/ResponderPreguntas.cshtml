@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<main class="container">
+    <form id="surveyForm">
+
+        <div class="rating-labels">
+            <span class="label-opcion uno">Muy malo (1)</span>
+            <span class="label-opcion dos">Malo (2)</span>
+            <span class="label-opcion tres">Regular (3)</span>
+            <span class="label-opcion cuatro">Bueno (4)</span>
+            <span class="label-opcion cinco">Excelente (5)</span>
+        </div>
+
+        <div class="questions-list">
+            <div class="question-item">
+                <label class="question-text">1. ¿Qué tan satisfecho estás con el servicio?</label>
+                <div class="rating-options">
+                    <label><input type="radio" name="q1" value="1" required /><span>1</span></label>
+                    <label><input type="radio" name="q1" value="2" /><span>2</span></label>
+                    <label><input type="radio" name="q1" value="3" /><span>3</span></label>
+                    <label><input type="radio" name="q1" value="4" /><span>4</span></label>
+                    <label><input type="radio" name="q1" value="5" /><span>5</span></label>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <label class="question-text">2. ¿Cómo calificarías la atención recibida?</label>
+                <div class="rating-options">
+                    <label><input type="radio" name="q2" value="1" required /><span>1</span></label>
+                    <label><input type="radio" name="q2" value="2" /><span>2</span></label>
+                    <label><input type="radio" name="q2" value="3" /><span>3</span></label>
+                    <label><input type="radio" name="q2" value="4" /><span>4</span></label>
+                    <label><input type="radio" name="q2" value="5" /><span>5</span></label>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-buttons">
+            <button type="submit" class="submit-button">Finalizar encuesta</button>
+            <button type="button" class="cancel-button" onclick="cancelSurvey()">Cancelar</button>
+        </div>
+
+    </form>
+</main>
+
+<script>
+        document.getElementById('surveyForm').addEventListener('submit', e => {
+          e.preventDefault();
+          alert('Encuesta enviada. ¡Gracias!');
+        });
+
+    function cancelSurvey() {
+      if (confirm("¿Estás seguro que deseas cancelar la encuesta?")) {
+
+       window.location.href='/Users/Index';
+      }
+    }
+</script>

@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalle de Encuesta</title>
+    <link rel="stylesheet" href="~/assets/styles.css" />
+</head>
+<body>
+    <header class="header-bar">
+        <h1 class="page-title">Satisfacción del Estudiante</h1>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </header>
+    <div class="menu-modal" id="menuModal">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="user-icon">👤</div>
+                <span class="user-name">Ana Gómez</span>
+                <span class="close-menu" onclick="toggleMenu()">×</span>
+            </div>
+            <div class="menu-links">
+                <a href="Index.html">Inicio</a>
+                <a href="VerMisEncuestas.html">Mis Encuestas</a>
+            </div>
+            <a href="Login.html" class="logout-link">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="survey-header">
+            <h2 class="survey-subtitle">Preguntas de la Encuesta</h2>
+        </div>
+
+        <ul class="question-list">
+            <li>1. ¿Qué tan satisfecho estás con las instalaciones?</li>
+            <li>2. ¿Cómo calificarías la atención del personal docente?</li>
+            <li>3. ¿Recomendarías esta institución a otras personas?</li>
+            <li>4. ¿Qué aspectos consideras que deben mejorar?</li>
+            <li>5. ¿Te sientes motivado a continuar tus estudios?</li>
+        </ul>
+    </div>
+
+    <script>
+        function toggleMenu() {
+          const modal = document.getElementById('menuModal');
+          modal.classList.toggle('active');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</body>
+</html>

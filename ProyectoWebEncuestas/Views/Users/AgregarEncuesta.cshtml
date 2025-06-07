@@ -1,0 +1,97 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<main class="container">
+    <form id="addSurveyForm">
+        <div class="form-group">
+            <label for="surveyName" style="font-weight: bold;">Nombre de la encuesta:</label>
+            <input class="aggencuesta" type="text" id="surveyName" name="surveyName" required />
+        </div>
+
+        <div id="questionsContainer">
+            <div class="form-group question-item">
+                <div class="question-input-wrapper">
+                    <div class="text-input-group">
+                        <label for="question1">Pregunta:</label>
+                        <input type="text" id="question1" name="questions[]" required />
+                    </div>
+                    <div class="number-input-group">
+                        <label for="questionNumber1">Número:</label>
+                        <input type="text" id="questionNumber1" name="questionNumbers[]" value="1" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn-add" onclick="addQuestion()">Agregar pregunta</button>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="submit-button">Guardar</button>
+            <button type="button" class="cancel-button" onclick="cancelar()">Cancelar</button>
+        </div>
+    </form>
+</main>
+<script>
+  const token = localStorage.getItem("token");
+
+
+
+
+  let questionCount = 1;
+    function addQuestion() {
+      if (questionCount >= 10) {
+        alert("Solo se permiten hasta 10 preguntas.");
+        return;
+      }
+      questionCount++;
+      const container = document.getElementById("questionsContainer");
+      const div = document.createElement("div");
+      div.className = "form-group question-item";
+      div.innerHTML = `
+            <label for="question${questionCount}">Pregunta ${questionCount}</label>
+            <input type="text" id="question${questionCount}" name="questions[]" required />
+            <div class="input-group">
+                <input type="text" class="question-number" value="${questionCount}" required />
+                <i class="fas fa-question"></i>
+            </div>
+                  `;
+                  container.appendChild(div);
+      }
+
+    function cancelar() {
+      if (confirm("¿Deseas cancelar esta encuesta?")) {
+        window.history.back();
+      }
+    }
+
+    function addQuestion() {
+          if (questionCount >= 10) {
+            alert("Solo se permiten hasta 10 preguntas.");
+            return;
+          }
+          questionCount++;
+          const container = document.getElementById("questionsContainer");
+
+          const div = document.createElement("div");
+          div.className = "form-group question-item";
+
+          div.innerHTML = `
+        <div class="question-input-wrapper">
+            <div class="text-input-group">
+                <label for="question">Pregunta:</label>
+                <input type="text" id="question${questionCount}" name="questions[]" required />
+            </div>
+            <div class="number-input-group">
+                <label for="questionNumber${questionCount}">Número:</label>
+                <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
+            </div>
+        </div>
+          `;
+
+        container.appendChild(div);
+    }
+
+  </script>

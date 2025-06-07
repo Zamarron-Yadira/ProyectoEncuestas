@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+
+<main class="main-content">
+    <section class="form-section">
+        <h2 class="seccion-titulo">Nuevo Usuario</h2>
+        <form class="user-form">
+            <label for="nombre">Nombre de usuario:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej. juan.perez" required />
+
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required />
+
+
+            <label for="rol">Rol:</label>
+            <select id="rol" name="rol" required>
+                <option value="" disabled selected>Selecciona un rol</option>
+                <option value="Usuario">Usuario</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-primary">Agregar</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='/Admin/Usuarios'">Cancelar</button>
+            </div>
+        </form>
+    </section>
+</main>

@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+
+<main class="main-content">
+     <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Encuestas respondidas</div>
+                <div class="stat-number">120</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Encuestas pendientes</div>
+                <div class="stat-number">30</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Respuestas por encuesta</div>
+                <div class="stat-number">15</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total de alumnos entrevistados</div>
+                <div class="stat-number">150</div>
+            </div>
+        </section>
+
+        <section class="active-users">
+            <h2>Usuarios activos aplicando encuestas</h2>
+            <ul class="user-list">
+                <li><span>Juan Pérez</span></li>
+                <li><span>María López</span></li>
+                <li><span>José Ramírez</span></li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+        async function cargarEstadisticas() {
+        try {
+            const response = await fetch("https://apiencuestase8.websitos256.com/api/encuestas/encuestas", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+         
+        } catch (error) {
+            console.error(error);
+            alert("Error al cargar las encuestas");
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", cargarEstadisticas());
+    </script>

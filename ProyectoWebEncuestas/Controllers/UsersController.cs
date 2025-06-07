@@ -13,5 +13,28 @@ namespace EncuestasWeb.Controllers
 		{
 			return View();
 		}
+		public IActionResult AgregarEncuesta() {
+			return View();
+		}
+		public IActionResult EditarEncuesta()
+		{
+			return View();
+		}
+		public IActionResult EliminarEncuesta()
+		{
+			return View();
+		}
+		public IActionResult DetalleEncuesta()
+		{
+			return View();
+		}
+		public IActionResult AgregarRespuestaAlumno()
+		{
+			return View();
+		}
+		public IActionResult ResponderPreguntas()
+		{
+			return View();
+		}
 	}
 }

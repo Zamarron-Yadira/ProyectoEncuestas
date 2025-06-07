@@ -1,8 +1,7 @@
-﻿
-    @{
-        Layout = "_Layout";
-    }
-	<main>
+﻿@{
+    Layout = "_Layout";
+}
+<main>
     <div class="container">
         <h1>Encuestas Existentes</h1>
         <!-- Filtro por fecha -->
@@ -48,7 +47,7 @@
                 card.className = "card-surv";
 
                 card.innerHTML = `
-                    <a href="Encuesta.html?id=${encuesta.id}" class="survey-card">
+                    <a href="DetalleEncuesta?id=${encuesta.id}" class="survey-card">
                         <div class="survey-info">
                             <strong>${encuesta.titulo}</strong><br />
                             <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
@@ -65,5 +64,26 @@
     }
 
     window.addEventListener("DOMContentLoaded", cargarEncuestas);
+
+    // Función para filtrar encuestas por fecha
+    document.getElementById('fechaFiltro').addEventListener('input', function() {
+      const filtro = this.value; // yyyy-mm-dd
+      const allSurveys = document.querySelectorAll('#allSurveys .survey-card');
+      const featuredSurveys = document.querySelectorAll('#featuredSurveys .survey-card');
+
+      function filtrarEncuestas(lista) {
+        lista.forEach(encuesta => {
+          const fechaEncuesta = encuesta.getAttribute('data-fecha');
+          if (!filtro || fechaEncuesta >= filtro) {
+            encuesta.style.display = 'block';
+          } else {
+            encuesta.style.display = 'none';
+          }
+        });
+      }
+
+      filtrarEncuestas(allSurveys);
+      filtrarEncuestas(featuredSurveys);
+    });
 </script>
 

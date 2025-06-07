@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<main class="container">
+    <div class="form-group">
+        <p class="survey-name-highlight">Encuesta de Satisfacción</p>
+    </div>
+
+    <p class="warning-text">¿Estás seguro de que deseas eliminar esta encuesta? Esta acción no se puede deshacer.</p>
+
+    <div class="button-group">
+        <button class="submit-button" onclick="confirmarEliminacion()">Eliminar</button>
+        <button class="cancel-button" onclick="cancelar()">Cancelar</button>
+    </div>
+</main>
+
+<script>
+      function confirmarEliminacion() {
+      if (confirm("¿Realmente deseas eliminar esta encuesta?")) {
+        alert("Encuesta eliminada correctamente.");
+        window.location.href = "#"; 
+      }
+    }
+
+    function cancelar() {
+      window.history.back();
+    }
+</script>
