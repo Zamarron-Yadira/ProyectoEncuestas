@@ -36,62 +36,92 @@
 </main>
 <script>
   const token = localStorage.getItem("token");
+     let questionCount = 1;
 
+       // Función para agregar nuevas preguntas
+      function addQuestion() {
+        if (questionCount >= 10) {
+          alert("Solo se permiten hasta 10 preguntas.");
+          return;
+        }
+        questionCount++;
 
+        const container = document.getElementById("questionsContainer");
+        const div = document.createElement("div");
+        div.className = "form-group question-item";
 
-
-  let questionCount = 1;
-    function addQuestion() {
-      if (questionCount >= 10) {
-        alert("Solo se permiten hasta 10 preguntas.");
-        return;
-      }
-      questionCount++;
-      const container = document.getElementById("questionsContainer");
-      const div = document.createElement("div");
-      div.className = "form-group question-item";
-      div.innerHTML = `
-            <label for="question${questionCount}">Pregunta ${questionCount}</label>
-            <input type="text" id="question${questionCount}" name="questions[]" required />
-            <div class="input-group">
-                <input type="text" class="question-number" value="${questionCount}" required />
-                <i class="fas fa-question"></i>
-            </div>
-                  `;
-                  container.appendChild(div);
-      }
-
-    function cancelar() {
-      if (confirm("¿Deseas cancelar esta encuesta?")) {
-        window.history.back();
-      }
-    }
-
-    function addQuestion() {
-          if (questionCount >= 10) {
-            alert("Solo se permiten hasta 10 preguntas.");
-            return;
-          }
-          questionCount++;
-          const container = document.getElementById("questionsContainer");
-
-          const div = document.createElement("div");
-          div.className = "form-group question-item";
-
-          div.innerHTML = `
+           div.innerHTML = `
         <div class="question-input-wrapper">
-            <div class="text-input-group">
-                <label for="question">Pregunta:</label>
-                <input type="text" id="question${questionCount}" name="questions[]" required />
-            </div>
-            <div class="number-input-group">
-                <label for="questionNumber${questionCount}">Número:</label>
-                <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
-            </div>
+          <div class="text-input-group">
+            <label for="question${questionCount}">Pregunta:</label>
+            <input type="text" id="question${questionCount}" name="questions[]" required />
+          </div>
+          <div class="number-input-group">
+            <label for="questionNumber${questionCount}">Número:</label>
+            <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
+          </div>
         </div>
-          `;
+      `;
 
-        container.appendChild(div);
+      container.appendChild(div);
     }
+    
+      function cancelar() {
+        if (confirm("¿Deseas cancelar esta encuesta?")) {
+          window.history.back();
+        }
+      }
+
+    document.getElementById("addSurveyForm").addEventListener("submit", function(event){
+          event.preventDefault();
+
+          const titulo = document.getElementById("surveyName").value;
+          const questionsInputs = document.querySelectorAll('input[name="questions[]"]');
+          const numbersInputs = document.querySelectorAll('input[name="questionNumbers[]"]');
+
+          const preguntas = [];
+
+            for (let i = 0; i < questionsInputs.length; i++) {
+                 const descripcion = questionsInputs[i].value;
+
+                const numero = parseInt(numbersInputs[i].value);
+
+                preguntas.push({
+                     Descripcion: descripcion,
+                     NumeroPregunta : numero
+                });
+            }
+
+            const data= {
+                  Titulo: titulo,
+                  Preguntas: preguntas
+            };
+
+              fetch("https://apiencuestase8.websitos256.com/api/encuestas/crear", {
+                    method: "POST",
+                    headers:{
+                          "Authorization": `Bearer ${token}`,
+                              "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+              }). 
+              then(response => {
+                      if (!response.ok) {
+                         return response.json().then(err => {throw err;
+                      });
+
+                  }
+                    return response.json();
+              })
+              .then(data => {
+                      console.log("Encuesta creada:", data);
+                      alert("Encuesta creada exitosamente");
+                      window.location.href = "/Users/Index";
+              })
+              .catch(error => {
+                     console.error("Error al crear la encuesta:", error);
+                     alert("Error al crear la encuesta: " + error.message);
+              });
+    });
 
   </script>
