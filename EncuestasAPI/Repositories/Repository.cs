@@ -1,4 +1,5 @@
 ﻿using EncuestasAPI.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Repositories
 {
@@ -19,6 +20,13 @@ namespace EncuestasAPI.Repositories
 		public T? GetId(object id)
 		{
 			return Context.Find<T>(id);
+		}
+
+		public Encuestas? GetxId(int id)
+		{
+			return Context.Encuestas
+			   .Include(e => e.Preguntas.OrderBy(x=>x.NumeroPregunta))
+			   .FirstOrDefault(e => e.Id == id);
 		}
 
 		//CRUD	

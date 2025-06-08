@@ -18,6 +18,8 @@ namespace EncuestasAPI.Helpers
 
 			//Preguntas
 			CreateMap<Preguntas, PreguntaDTO>();
+			CreateMap<Preguntas, PreguntasDTO>();
+
 
 			//Respuestas
 			CreateMap<Respuestas, RespuestaDTO>();

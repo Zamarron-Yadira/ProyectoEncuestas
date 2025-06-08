@@ -5,15 +5,47 @@
 
 <div class="container">
     <div class="survey-header">
-        <h2 class="survey-subtitle">Nombre de la Encuesta</h2>
+        <h2 class="survey-subtitle" id="encuesta-titulo"></h2>
         <a href="/Users/AgregarRespuestaAlumno" class="add-response-button">Agregar respuesta</a>
     </div>
 
-    <ul class="question-list">
-        <li>1. ¿Qué tan satisfecho estás con las instalaciones?</li>
-        <li>2. ¿Cómo calificarías la atención del personal docente?</li>
-        <li>3. ¿Recomendarías esta institución a otras personas?</li>
-        <li>4. ¿Qué aspectos consideras que deben mejorar?</li>
-        <li>5. ¿Te sientes motivado a continuar tus estudios?</li>
+    <ul class="question-list" id="preguntas-lista">
+       
     </ul>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const params = new URLSearchParams(window.location.search);
+        const encuestaId = params.get("id"); // <-- Esto toma el ID de la URL
+
+        const token = localStorage.getItem("token");
+
+        if (!encuestaId || !token) {
+            alert("Sesión expirada o ID inválido");
+            return;
+        }
+
+        const response = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${encuestaId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const encuesta = await response.json();
+            document.querySelector(".survey-subtitle").textContent = encuesta.titulo;
+
+            const lista = document.querySelector(".question-list");
+            lista.innerHTML = "";
+
+            encuesta.preguntas.forEach((p, i) => {
+                const li = document.createElement("li");
+                li.textContent = `${p.numeroPregunta}. ${p.descripcion}`;
+                lista.appendChild(li);
+            });
+        } else {
+            alert("No se pudo cargar la encuesta");
+        }
+    });
+</script>

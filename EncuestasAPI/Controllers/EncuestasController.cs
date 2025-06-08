@@ -50,10 +50,22 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
+		//[HttpGet("{id}")]
+		//public IActionResult GetById(int id)
+		//{
+		//	var encuesta = _encuestaRepo.GetId(id);
+		//	if (encuesta == null)
+		//	{
+		//		return NotFound();
+		//	}
+		//	var dto = _mapper.Map<EncuestaDTO>(encuesta);
+		//	return Ok(dto);
+		//}
+
 		[HttpGet("{id}")]
-		public IActionResult GetById(int id)
+		public IActionResult GetxId(int id)
 		{
-			var encuesta = _encuestaRepo.GetId(id);
+			var encuesta = _encuestaRepo.GetxId(id);
 			if (encuesta == null)
 			{
 				return NotFound();
@@ -61,6 +73,7 @@ namespace EncuestasAPI.Controllers
 			var dto = _mapper.Map<EncuestaDTO>(encuesta);
 			return Ok(dto);
 		}
+
 
 		[HttpGet("usuario/{idUsuario}")]
 		public IActionResult GetByUsuario(int idUsuario)
