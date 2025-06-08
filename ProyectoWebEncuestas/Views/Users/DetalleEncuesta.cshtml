@@ -25,6 +25,10 @@
             alert("Sesión expirada o ID inválido");
             return;
         }
+        // Asignar dinámicamente el ID al botón
+        const boton = document.querySelector(".add-response-button");
+        boton.href = `/Users/AgregarRespuestaAlumno?id=${encuestaId}`;
+
 
         const response = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${encuestaId}`, {
             headers: {

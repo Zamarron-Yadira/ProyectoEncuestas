@@ -6,19 +6,96 @@
 <div class="container">
     <h2 class="survey-subtitle">Datos del Alumno:</h2>
 
-    <form class="student-form">
+    <form class="student-form" id="form-alumno">
         <div class="input-group">
             <i class="fas fa-user icon"></i>
-            <input type="text" placeholder="Nombre del alumno" required />
+            <input type="text" id="nombreAlumno" placeholder="Nombre del alumno" required />
         </div>
         <div class="input-group">
             <i class="fas fa-id-card"></i>
-            <input type="text" placeholder="Número de control" required />
+            <input type="text" id="numeroControl" placeholder="Número de control" required />
         </div>
         <div class="form-buttons">
-            <a href="/Users/ResponderPreguntas" class="next-button">Siguiente</a>
-            <a href="/Users/Index" class="cancel-button">Cancelar</a>
+            <a id="btn-siguiente" href="#" class="next-button">
+                Siguiente</a>
+                <a href="/Users/Index" id="btn-cancelar" class="cancel-button">Cancelar</a>
         </div>
     </form>
 </div>
 
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const encuestaId = new URLSearchParams(window.location.search).get("id");
+
+      const formAlumno = document.getElementById("form-alumno");
+      if (formAlumno) {
+        document.getElementById("btn-siguiente").addEventListener("click", async function (e) {
+          e.preventDefault(); // evitar comportamiento por defecto del enlace
+
+          const nombre = document.getElementById("nombreAlumno").value.trim();
+          const numeroControl = document.getElementById("numeroControl").value.trim();
+
+          if (!nombre || !numeroControl || !encuestaId) {
+            alert("Complete todos los campos.");
+            return;
+          }
+          ``
+          const token = localStorage.getItem("token");
+
+          try {
+            const response = await fetch('https://apiencuestase8.websitos256.com/api/respuestas/registrarInicio', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+                 body: JSON.stringify({
+                  IdEncuesta: parseInt(encuestaId),
+                  NombreAlumno: nombre,
+                  NumControlAlumno: numeroControl
+                })
+
+            });
+
+            if (!response.ok) throw new Error("Error al registrar datos del alumno");
+
+            const data = await response.json();
+            const idRespuesta = data.idRespuesta;
+
+            localStorage.setItem("idRespuesta", idRespuesta);
+
+            window.location.href = `/Users/ResponderPreguntas?id=${encuestaId}`;
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+
+        document.getElementById("btn-cancelar").addEventListener("click", async function (e) {
+            e.preventDefault(); // evitar navegación inmediata
+
+            const idRespuesta = localStorage.getItem("idRespuesta");
+            const token = localStorage.getItem("token");
+
+            if (idRespuesta && token) {
+                try {
+                    await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } catch (err) {
+                    console.error("Error cancelando en el servidor:", err);
+                }
+            }
+
+            localStorage.removeItem("idRespuesta");
+
+            // Redirigir después de cancelar
+            window.location.href = "/Users/Index";
+        });
+
+      }
+    });
+</script>

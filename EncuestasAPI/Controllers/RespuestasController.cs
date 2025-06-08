@@ -53,6 +53,14 @@ namespace EncuestasAPI.Controllers
 		[HttpPost("registrarInicio")]
 		public async Task <IActionResult> RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
+			// Obtener el ID del usuario aplicador desde los claims del token
+			var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id");
+			if (userIdClaim == null)
+				return Unauthorized("Token inválido o expirado.");
+
+			dto.IdUsuarioAplicador = int.Parse(userIdClaim.Value);
+
+
 			var entidad = Mapper.Map<Respuestas>(dto);
 			entidad.FechaAplicacion = DateTime.Now;
 
@@ -72,7 +80,9 @@ namespace EncuestasAPI.Controllers
 		[HttpPost("responderPreguntas")]
 		public async Task <IActionResult> ResponderPreguntas([FromBody] List<RespuestaDetalleDTO> dtos)
 		{
-			if (dtos == null || dtos.Count == 0)
+			try
+			{
+				if (dtos == null || dtos.Count == 0)
 			{
 				return BadRequest("No se recibieron respuestas.");
 			}
@@ -96,6 +106,30 @@ namespace EncuestasAPI.Controllers
 				mensaje = "Respuestas registradas correctamente.",
 				cantidad = dtos.Count
 			});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Error del servidor: {ex.Message}");
+			}
+		}
+
+		[HttpDelete("cancelar/{idRespuesta}")]
+		public IActionResult CancelarRespuesta(int idRespuesta)
+		{
+			var respuesta = RespuestasRepository.GetId(idRespuesta);
+			if (respuesta == null)
+				return NotFound("Registro no encontrado.");
+
+			// Si tienes relaciones con Detallerespuestas, elimina primero sus hijos
+			var detalles = RepoDetalles.GetAll().Where(d => d.IdRespuesta == idRespuesta).ToList();
+			foreach (var d in detalles)
+			{
+				RepoDetalles.Delete(d);
+			}
+
+			RespuestasRepository.Delete(respuesta);
+
+			return Ok(new { mensaje = "Respuesta cancelada correctamente." });
 		}
 
 	}
