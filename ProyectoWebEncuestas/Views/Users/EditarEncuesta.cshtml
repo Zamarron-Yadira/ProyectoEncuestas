@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="button-group">
-            <button type="button" class="btn-add" onclick="addQuestion()">Agregar otra pregunta</button>
+            <button type="button" id="btnAddQuestion" class="btn-add" onclick="addQuestion()">Agregar otra pregunta</button>
         </div>
 
         <div class="button-group">
@@ -34,10 +34,46 @@
 </main>
 
 <script>
+      let questionCount = 0;
+      // Función para agregar nuevas preguntas
+      function addQuestion() {
+        if (questionCount >= 10) {
+          alert("Solo se permiten hasta 10 preguntas.");
+          return;
+        }
+        questionCount++;
+
+        const container = document.getElementById("questionsContainer");
+        const div = document.createElement("div");
+        div.className = "form-group question-item";
+
+           div.innerHTML = `
+        <div class="question-input-wrapper">
+          <div class="text-input-group">
+            <label for="question${questionCount}">Pregunta:</label>
+            <input type="text" id="question${questionCount}" name="questions[]" required />
+          </div>
+          <div class="number-input-group">
+            <label for="questionNumber${questionCount}">Número:</label>
+            <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
+          </div>
+        </div>
+      `;
+
+      container.appendChild(div);
+         // Deshabilitar el botón si ya se alcanzó el máximo
+        if (questionCount >= 10) {
+            alert("Solo se permiten hasta 10 preguntas.");
+          document.getElementById("btnAddQuestion").disabled = true;
+           
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
         const params = new URLSearchParams(window.location.search);
         const id = params.get("id");
         const token = localStorage.getItem("token");
+
 
         if (!id || !token) {
             alert("Token o ID de encuesta no encontrado.");
@@ -81,6 +117,12 @@
                     </div>
                 `;
             });
+            questionCount = encuesta.preguntas.length;
+
+            if (questionCount >= 10) {
+              document.getElementById("btnAddQuestion").disabled = true;
+                document.getElementById("btnAddQuestion").style.backgroundColor = "gray";
+            }
 
         } catch (err) {
             console.error("Error al cargar encuesta:", err.message);
@@ -88,4 +130,55 @@
             window.location.href = "/Users/Index";
         }
     });
+
+        document.getElementById("editSurveyForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const token = localStorage.getItem("token");
+
+        const titulo = document.getElementById("surveyName").value;
+        const questionDescs = document.getElementsByName("questions[]");
+        const questionNumbers = document.getElementsByName("questionNumbers[]");
+        const questionIds = document.getElementsByName("questionIds[]");
+
+        const preguntas = [];
+
+        for (let i = 0; i < questionDescs.length; i++) {
+            preguntas.push({
+                id: questionIds[i]?.value ? parseInt(questionIds[i].value) : 0,
+                descripcion: questionDescs[i].value,
+                numeroPregunta: parseInt(questionNumbers[i].value)
+            });
+        }
+
+        const payload = {
+            titulo: titulo,
+            preguntas: preguntas
+        };
+
+        try {
+            const res = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`(${res.status}) ${errorText}`);
+            }
+
+            alert("Encuesta actualizada correctamente.");
+            window.location.href = "/Users/Index";
+        } catch (err) {
+            console.error("Error al actualizar encuesta:", err.message);
+            alert("Error al actualizar encuesta: " + err.message);
+        }
+    });
+
 </script>

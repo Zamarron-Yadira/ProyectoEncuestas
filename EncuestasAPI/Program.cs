@@ -73,13 +73,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 //repositorios
-//builder.Services.AddScoped<Repository<Encuestas>>();
 builder.Services.AddScoped<EstadisticasRepository>();
 builder.Services.AddScoped(typeof(Repository<>), typeof(Repository<>));
 // Registrar JWTService
 builder.Services.AddScoped<JWTService>();
-//builder.Services.AddScoped<Repository<Usuarios>>();
-//builder.Services.AddScoped<Repository<Preguntas>>();
 builder.Services.AddScoped(typeof(UsuarioValidator));
 builder.Services.AddScoped(typeof(EncuestaValidator));
 
@@ -90,9 +87,10 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-				.WithOrigins("https://encuestasweb.websitos256.com")
+				.WithOrigins("https://localhost:7058")
 				.AllowAnyMethod()
-				.AllowAnyHeader();
+				.AllowAnyHeader()
+				.AllowCredentials();
 		});
 });
 
