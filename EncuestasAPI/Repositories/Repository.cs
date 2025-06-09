@@ -47,6 +47,7 @@ namespace EncuestasAPI.Repositories
 						}).ToList()
 				}).FirstOrDefault();
 		
+
 		}
 		//CRUD	
 		public void Insert(T entity)
