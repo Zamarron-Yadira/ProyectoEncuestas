@@ -225,24 +225,39 @@ namespace EncuestasAPI.Controllers
 		}
 
 
-		[Authorize(Roles ="Admin")]
+		[Authorize]
 		[HttpGet("estadisticas/totalencuestas")]
 		public IActionResult GetTotalEncuestas()
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasCreadas());
 		}
 
-		[Authorize(Roles = "Admin")]
+		[Authorize]
 		[HttpGet("estadisticas/totalrespondidas")]
 		public IActionResult GetTotalEncuestasRespondidas()
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasRespondidas());
 		}
-		[Authorize(Roles = "Admin")]
+
+		[Authorize]
 		[HttpGet("estadisticas/totalnorespondidas")]
 		public IActionResult GetTotalEncuestasSinResponder ()
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasSinResponder());
+		}
+
+		[Authorize]
+		[HttpGet("estadisticas/promedioRespuestasPorEncuesta")]
+		public IActionResult GetPromedioRespuestasPorEncuesta()
+		{
+			return Ok(_estadisticasRepo.GetPromedioRespuestasPorEncuesta());
+		}
+
+		[Authorize]
+		[HttpGet("estadisticas/totalAlumnosEntrevistados")]
+		public IActionResult GetTotalAlumnosEntrevistados()
+		{
+			return Ok(_estadisticasRepo.GetTotalAlumnosEntrevistados());
 		}
 
 

@@ -6,28 +6,45 @@ namespace EncuestasAPI.Hubs
 {
 	public class EncuestasHub : Hub
 	{
-		public static ConcurrentDictionary<string, UsuarioEncuestaInfo> UsuariosConectados = new();
+		private static readonly ConcurrentDictionary<string, string> usuariosEncuesta = new();
 
-		public async Task UnirseEncuesta(string nombreUsuario, int idEncuesta)
+		private readonly IHubContext<EstadisticasHub> _estadisticasHub;
+
+		public EncuestasHub(IHubContext<EstadisticasHub> estadisticasHub)
 		{
-			var info = new UsuarioEncuestaInfo
-			{
-				NombreUsuario = nombreUsuario,
-				IdEncuesta = idEncuesta
-			};
+			_estadisticasHub = estadisticasHub;
+		}
 
-			UsuariosConectados[Context.ConnectionId] = info;
+		public async Task UnirseEncuesta(string idEncuesta, string nombreAlumno)
+		{
+			var clave = $"{Context.ConnectionId}:{idEncuesta}";
+			usuariosEncuesta[clave] = nombreAlumno;
 
-			await Clients.All.SendAsync("UsuarioAsignado", UsuariosConectados.Values.ToList());
+			await Clients.All.SendAsync("AlumnoEnEncuesta", nombreAlumno, idEncuesta);
+
+			var usuariosActivos = usuariosEncuesta.Values.Distinct().ToList();
+			await _estadisticasHub.Clients.All.SendAsync("UsuariosActivos", usuariosActivos);
+			await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas");
 		}
 
 		public override async Task OnDisconnectedAsync(Exception? exception)
 		{
-			UsuariosConectados.TryRemove(Context.ConnectionId, out _);
-			await Clients.All.SendAsync("UsuarioAsignado", UsuariosConectados.Values.ToList());
+			var clavesARemover = usuariosEncuesta.Keys
+				.Where(k => k.StartsWith(Context.ConnectionId + ":"))
+				.ToList();
+
+			foreach (var clave in clavesARemover)
+			{
+				usuariosEncuesta.TryRemove(clave, out _);
+			}
+
+			var usuariosActivos = usuariosEncuesta.Values.Distinct().ToList();
+			await _estadisticasHub.Clients.All.SendAsync("UsuariosActivos", usuariosActivos);
+			await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			await base.OnDisconnectedAsync(exception);
 		}
+
 	}
 
 }

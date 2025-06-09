@@ -16,13 +16,17 @@ namespace EncuestasAPI.Controllers
 	[ApiController]
 	public class RespuestasController : ControllerBase
 	{
+		private readonly EstadisticasRepository _estadisticasRepo;
+
 		private readonly IHubContext<EstadisticasHub> _hub;
 		public RespuestasController(IMapper mapper, Repository<Detallerespuestas> repoDetalles,
-			Repository<Respuestas> _respuestasRepository, IHubContext<EstadisticasHub> hub)
+			Repository<Respuestas> _respuestasRepository, IHubContext<EstadisticasHub> hub,
+			EstadisticasRepository estadisticasRepo)
 		{
 			Mapper = mapper;
 			RepoDetalles = repoDetalles;
 			RespuestasRepository = _respuestasRepository;
+			_estadisticasRepo = estadisticasRepo;
 			_hub = hub;
 			
 		}

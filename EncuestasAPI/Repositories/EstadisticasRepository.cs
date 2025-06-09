@@ -36,6 +36,13 @@ namespace EncuestasAPI.Repositories
 			var totalRespuestas = GetTotalEncuestasRespondidas();
 			return (double)totalRespuestas / totalEncuestas;
 		}
+		public int GetTotalAlumnosEntrevistados()
+		{
+			return Context.Respuestas
+				.Select(r => r.NumControlAlumno)
+				.Distinct()
+				.Count();
+		}
 
 		//Preguntas
 		public int GetTotalPreguntas()

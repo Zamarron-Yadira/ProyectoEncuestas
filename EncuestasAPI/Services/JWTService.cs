@@ -4,6 +4,7 @@ using EncuestasAPI.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace EncuestasAPI.Services
 {
@@ -33,7 +34,7 @@ namespace EncuestasAPI.Services
 				{
 					new Claim("Id", usuario.Id.ToString()),
 					new Claim(ClaimTypes.Name, usuario.Nombre),
-					new Claim(ClaimTypes.Role, dto.EsAdmin == 1? "Admin":"Usuario")
+					new Claim(ClaimTypes.Role, usuario.EsAdmin == 1? "Admin":"Usuario")
 				};
 
 				//2. Crear un descriptor de token con esos claims
@@ -44,8 +45,9 @@ namespace EncuestasAPI.Services
 					claims: claims,
 					notBefore: DateTime.UtcNow,
 					expires: DateTime.UtcNow.AddMinutes(30), // Expira en 30 minutos
-					signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
-						System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256)
+					signingCredentials: new SigningCredentials(
+	new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
+	SecurityAlgorithms.HmacSha256)
 					);
 
 				//3. Crear JWT

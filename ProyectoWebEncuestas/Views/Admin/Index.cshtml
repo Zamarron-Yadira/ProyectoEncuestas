@@ -3,52 +3,96 @@
 }
 
 <main class="main-content">
-     <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">Encuestas respondidas</div>
-                <div class="stat-number">120</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Encuestas pendientes</div>
-                <div class="stat-number">30</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Respuestas por encuesta</div>
-                <div class="stat-number">15</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Total de alumnos entrevistados</div>
-                <div class="stat-number">150</div>
-            </div>
-        </section>
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Encuestas respondidas</div>
+            <div class="stat-number" id="stat-respondidas">...</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Encuestas pendientes</div>
+            <div class="stat-number" id="stat-pendientes">...</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Respuestas por encuesta</div>
+            <div class="stat-number" id="stat-promedio">...</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Total de alumnos entrevistados</div>
+            <div class="stat-number" id="stat-entrevistados">...</div>
+        </div>
+    </section>
 
-        <section class="active-users">
-            <h2>Usuarios activos aplicando encuestas</h2>
-            <ul class="user-list">
-                <li><span>Juan Pérez</span></li>
-                <li><span>María López</span></li>
-                <li><span>José Ramírez</span></li>
-            </ul>
-        </section>
-    </main>
+    <section class="active-users">
+        <h2>Usuarios activos aplicando encuestas</h2>
+        <ul class="user-list" id="lista-usuarios">
+        </ul>
+    </section>
+</main>
 
-    <script>
-        const token = localStorage.getItem("token");
-        async function cargarEstadisticas() {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const token = localStorage.getItem("token");
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://apiencuestase8.websitos256.com/hubs/estadisticas", {
+            accessTokenFactory: () => token
+        })
+        .build();
+
+    connection.on("ActualizarEstadisticas", () => {
+        console.log("Recibida actualización de estadísticas");
+        cargarEstadisticas();
+        cargarUsuariosActivos();
+    });
+
+    connection.on("UsuariosActivos", (usuarios) => {
+        const lista = document.getElementById("lista-usuarios");
+        lista.innerHTML = "";
+
+        if (usuarios.length === 0) {
+            lista.innerHTML = "<li><em>No hay usuarios activos</em></li>";
+            return;
+        }
+
+        usuarios.forEach(nombre => {
+            const li = document.createElement("li");
+            li.innerHTML = `<span>${nombre}</span>`;
+            lista.appendChild(li);
+        });
+    });
+
+    connection.start()
+        .then(() => console.log("Conectado a SignalR"))
+        .catch(err => console.error("Error al conectar con SignalR", err));
+
+        console.log("Token actual:", token);
+
+    async function cargarEstadisticas() {
         try {
-            const response = await fetch("https://apiencuestase8.websitos256.com/api/encuestas/encuestas", {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            });
+            const urls = [
+                { id: "respondidas", url: "encuestas/estadisticas/totalrespondidas" },
+                { id: "pendientes", url: "encuestas/estadisticas/totalnorespondidas" },
+                { id: "promedio", url: "encuestas/estadisticas/promedioRespuestasPorEncuesta" },
+                { id: "entrevistados", url: "encuestas/estadisticas/totalAlumnosEntrevistados" }
+            ];
 
-         
+            for (const item of urls) {
+                const res = await fetch(`https://apiencuestase8.websitos256.com/api/${item.url}`, {
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                if (!res.ok) throw new Error(`Error al consultar ${item.url}`);
+
+                const data = await res.json();
+                document.getElementById(`stat-${item.id}`).innerText = data;
+            }
         } catch (error) {
-            console.error(error);
-            alert("Error al cargar las encuestas");
+            console.error("Error al cargar las estadísticas:", error);
+            alert(`Error al cargar estadísticas: ${error.message}`);
         }
     }
 
-    window.addEventListener("DOMContentLoaded", cargarEstadisticas());
-    </script>
+    window.addEventListener("DOMContentLoaded", cargarEstadisticas);
+</script>

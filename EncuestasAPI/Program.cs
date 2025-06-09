@@ -1,4 +1,4 @@
-using EncuestasAPI.Helpers;
+﻿using EncuestasAPI.Helpers;
 using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.Entities;
 using EncuestasAPI.Models.Validators;
@@ -15,20 +15,42 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOptions =>
+.AddJwtBearer(options =>
 {
-	jwtOptions.Audience = builder.Configuration["Jwt:Audience"];
-	jwtOptions.TokenValidationParameters = new TokenValidationParameters
+	options.TokenValidationParameters = new TokenValidationParameters
 	{
 		ValidateIssuer = true,
 		ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
 		ValidateAudience = true,
 		ValidAudience = builder.Configuration["Jwt:Audience"],
+
 		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+
 		ValidateLifetime = true,
+		ClockSkew = TimeSpan.Zero,
 		RoleClaimType = ClaimTypes.Role
+	};
+
+
+	options.Events = new JwtBearerEvents
+	{
+		OnAuthenticationFailed = context =>
+		{
+			Console.WriteLine($"🔴 Autenticación fallida: {context.Exception.Message}");
+			return Task.CompletedTask;
+		},
+		OnChallenge = context =>
+		{
+			Console.WriteLine($"🔴 Challenge fallido: {context.ErrorDescription}");
+			return Task.CompletedTask;
+		},
+		OnTokenValidated = context =>
+		{
+			Console.WriteLine($"✅ Token válido para: {context.Principal.Identity.Name}");
+			return Task.CompletedTask;
+		}
 	};
 });
 
@@ -42,6 +64,7 @@ builder.Services.AddDbContext<EncuestasContext>
     );
 
 builder.Services.AddAutoMapper(typeof(AutomapperProfile));
+builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
