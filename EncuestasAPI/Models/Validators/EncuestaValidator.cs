@@ -39,5 +39,42 @@ namespace EncuestasAPI.Models.Validators
 		
 			return !errores.Any();
 		}
+
+		public bool ValidateEditarEncuesta(EditarEncuestaDTO dto, out List<string> errores)
+		{
+			errores = new List<string>();
+
+			if (string.IsNullOrWhiteSpace(dto.Titulo))
+				errores.Add("El título está vacío.");
+
+			if (dto.Titulo.Length > 150)
+				errores.Add("El título no debe superar los 150 caracteres.");
+
+			if (dto.Preguntas.Count > 10)
+				errores.Add("Máximo 10 preguntas por encuesta.");
+
+			var descripcionesDuplicadas = dto.Preguntas
+				.GroupBy(p => p.Descripcion.Trim().ToLower())
+				.Where(g => g.Count() > 1)
+				.Select(g => g.Key).ToList();
+
+			if (descripcionesDuplicadas.Any())
+				errores.Add("Hay preguntas con descripciones duplicadas.");
+
+			var numeros = dto.Preguntas.Select(p => p.NumeroPregunta).ToList();
+			if (numeros.Any(n => n < 1 || n > 10))
+				errores.Add("Los números de pregunta deben estar entre 1 y 10.");
+
+			if (numeros.Distinct().Count() != numeros.Count)
+				errores.Add("Hay números de pregunta duplicados.");
+
+			if (!Enumerable.Range(1, dto.Preguntas.Count).All(n => numeros.Contains(n)))
+				errores.Add("Los números de pregunta deben ser secuenciales del 1 al " + dto.Preguntas.Count);
+
+			return !errores.Any();
+		}
+
+
+
 	}
 }

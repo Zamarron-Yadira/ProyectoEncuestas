@@ -90,10 +90,9 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-				.WithOrigins("https://localhost:7058")
+				.WithOrigins("https://encuestasweb.websitos256.com")
 				.AllowAnyMethod()
-				.AllowAnyHeader()
-				.AllowCredentials();
+				.AllowAnyHeader();
 		});
 });
 

@@ -21,6 +21,7 @@ namespace EncuestasAPI.Controllers
 
 		private readonly Repository<Encuestas> _encuestaRepo;
 		private readonly Repository<Preguntas> _preguntaRepo;
+		private readonly Repository<Respuestas> _respuestasRepo;
 		private readonly EstadisticasRepository _estadisticasRepo;
 
 		private readonly IMapper _mapper;
@@ -29,17 +30,18 @@ namespace EncuestasAPI.Controllers
 		private readonly IHubContext<EstadisticasHub> _hub;
 
 		public EncuestasController(Repository<Encuestas> encuestaRepo,
-		Repository<Preguntas> preguntaRepo,
+		Repository<Preguntas> preguntaRepo, Repository<Respuestas> respuestasRepo,
 		IMapper mapper, EncuestaValidator validador, EstadisticasRepository estadisticasRepo,
 		IHubContext<EstadisticasHub> hub)
 		{
 			_encuestaRepo = encuestaRepo;
 			_preguntaRepo = preguntaRepo;
+			_respuestasRepo = respuestasRepo;
 			_estadisticasRepo = estadisticasRepo;
 			_hub = hub;
 			_mapper = mapper;
 			Validador = validador;
-			_hub = hub;
+
 		}
 
 		[HttpGet("encuestas")]
@@ -78,7 +80,6 @@ namespace EncuestasAPI.Controllers
 		[HttpGet("usuario/{idUsuario}")]
 		public IActionResult GetByUsuario(int idUsuario)
 		{
-			Console.WriteLine($"🔍 Consultando encuestas del usuario {idUsuario}");
 
 			var encuestas = _encuestaRepo.GetAll().Where(e=> e.IdUsuario == idUsuario).ToList();
 			var dto = _mapper.Map<IEnumerable<EncuestaDTO>>(encuestas);
@@ -127,9 +128,39 @@ namespace EncuestasAPI.Controllers
 			}
 		}
 
+		[HttpGet("con-preguntas/{id}")]
+		public ActionResult<EncuestaDTO> GetEncuestaConPreguntas(int id)
+		{
+			foreach (var claim in User.Claims)
+			{
+				Console.WriteLine($"CLAIM -> {claim.Type}: {claim.Value}");
+			}
+
+			var idClaim = User.FindFirst("Id");
+			if (idClaim == null)
+			{
+				return Unauthorized("El token no contiene el claim 'Id'");
+			}
+
+			var idUsuario = int.Parse(idClaim.Value);
+
+			var encuesta = _encuestaRepo.GetConPreguntas(id);
+			if (encuesta == null)
+			{
+				return NotFound("Encuesta no encontrada");
+			}
+				
+
+			return encuesta;
+		}
+
+
 		[HttpPut("{id}")]
 		public async Task<IActionResult> EditarEncuesta(int id, [FromBody] EditarEncuestaDTO dto)
 		{
+			if (!Validador.ValidateEditarEncuesta(dto, out List<string> errores))
+				return BadRequest(errores);
+
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
 				return NotFound("La encuesta no existe.");
@@ -138,8 +169,36 @@ namespace EncuestasAPI.Controllers
 			if (encuesta.IdUsuario != idUsuario)
 				return Forbid("No tienes permiso para editar esta encuesta.");
 
+			// si alguien ya la contestó/aplico no se podrá editar
+			if (_respuestasRepo.GetAll().Any(r => r.IdEncuesta == id))
+				return BadRequest("No se puede editar una encuesta que ya ha sido respondida.");
+
 			encuesta.Titulo = dto.Titulo;
 			_encuestaRepo.Update(encuesta);
+
+			foreach (var preguntaDto in dto.Preguntas)
+			{
+				if (preguntaDto.Id != 0)
+				{
+					var pregunta = _preguntaRepo.GetId(preguntaDto.Id);
+					if (pregunta != null)
+					{
+						pregunta.Descripcion = preguntaDto.Descripcion;
+						pregunta.NumeroPregunta = preguntaDto.NumeroPregunta;
+						_preguntaRepo.Update(pregunta);
+					}
+				}
+				else
+				{
+					var nueva = new Preguntas
+					{
+						IdEncuesta = id,
+						Descripcion = preguntaDto.Descripcion,
+						NumeroPregunta = preguntaDto.NumeroPregunta
+					};
+					_preguntaRepo.Insert(nueva);
+				}
+			}
 
 			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
