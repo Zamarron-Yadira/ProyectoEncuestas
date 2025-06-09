@@ -6,19 +6,19 @@
     <section class="stats-grid">
         <div class="stat-card">
             <div class="stat-title">Encuestas respondidas</div>
-            <div class="stat-number" id="stat-respondidas">...</div>
+            <span class="stat-number" id="stat-respondidas">...</span>
         </div>
         <div class="stat-card">
             <div class="stat-title">Encuestas pendientes</div>
-            <div class="stat-number" id="stat-pendientes">...</div>
+            <span class="stat-number" id="stat-pendientes">...</span>
         </div>
         <div class="stat-card">
             <div class="stat-title">Respuestas por encuesta</div>
-            <div class="stat-number" id="stat-promedio">...</div>
+            <span class="stat-number" id="stat-promedio">...</span>
         </div>
         <div class="stat-card">
             <div class="stat-title">Total de alumnos entrevistados</div>
-            <div class="stat-number" id="stat-entrevistados">...</div>
+            <span class="stat-number" id="stat-entrevistados">...</span>
         </div>
     </section>
 
@@ -31,25 +31,29 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
-    const token = localStorage.getItem("token");
+       const token = localStorage.getItem("token");
+    const baseApiUrl = "https://apiencuestase8.websitos256.com";
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("https://apiencuestase8.websitos256.com/hubs/estadisticas", {
+        .withUrl(`${baseApiUrl}/hubs/estadisticas`, {
             accessTokenFactory: () => token
         })
+        .configureLogging(signalR.LogLevel.Information)
         .build();
 
     connection.on("ActualizarEstadisticas", () => {
-        console.log("Recibida actualización de estadísticas");
-        cargarEstadisticas();
-        cargarUsuariosActivos();
+        console.log(" Evento: ActualizarEstadisticas");
+        cargarTotalRespondidas();
+        cargarTotalPendientes();
+        cargarPromedioRespuestas();
+        cargarTotalEntrevistados();
     });
 
     connection.on("UsuariosActivos", (usuarios) => {
         const lista = document.getElementById("lista-usuarios");
         lista.innerHTML = "";
 
-        if (usuarios.length === 0) {
+        if (!usuarios || usuarios.length === 0) {
             lista.innerHTML = "<li><em>No hay usuarios activos</em></li>";
             return;
         }
@@ -62,37 +66,74 @@
     });
 
     connection.start()
-        .then(() => console.log("Conectado a SignalR"))
-        .catch(err => console.error("Error al conectar con SignalR", err));
+        .then(() => {
+            console.log(" Conectado a SignalR");
+        })
+        .catch(err => {
+            console.error(" Error al conectar a SignalR:", err);
+        });
 
-        console.log("Token actual:", token);
 
-    async function cargarEstadisticas() {
+    async function cargarTotalRespondidas() {
         try {
-            const urls = [
-                { id: "respondidas", url: "encuestas/estadisticas/totalrespondidas" },
-                { id: "pendientes", url: "encuestas/estadisticas/totalnorespondidas" },
-                { id: "promedio", url: "encuestas/estadisticas/promedioRespuestasPorEncuesta" },
-                { id: "entrevistados", url: "encuestas/estadisticas/totalAlumnosEntrevistados" }
-            ];
-
-            for (const item of urls) {
-                const res = await fetch(`https://apiencuestase8.websitos256.com/api/${item.url}`, {
-                    headers: {
-                        "Authorization": "Bearer " + localStorage.getItem("token")
-                    }
-                });
-
-                if (!res.ok) throw new Error(`Error al consultar ${item.url}`);
-
-                const data = await res.json();
-                document.getElementById(`stat-${item.id}`).innerText = data;
-            }
-        } catch (error) {
-            console.error("Error al cargar las estadísticas:", error);
-            alert(`Error al cargar estadísticas: ${error.message}`);
+            const res = await fetch(`${baseApiUrl}/api/encuestas/totalrespondidas`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            document.getElementById("stat-respondidas").innerText = data;
+        } catch (err) {
+            console.error("❌ Error totalrespondidas:", err);
+            document.getElementById("stat-respondidas").innerText = "Error";
         }
     }
 
-    window.addEventListener("DOMContentLoaded", cargarEstadisticas);
+    async function cargarTotalPendientes() {
+        try {
+            const res = await fetch(`${baseApiUrl}/api/encuestas/totalnorespondidas`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            document.getElementById("stat-pendientes").innerText = data;
+        } catch (err) {
+            console.error("❌ Error totalnorespondidas:", err);
+            document.getElementById("stat-pendientes").innerText = "Error";
+        }
+    }
+
+    async function cargarPromedioRespuestas() {
+        try {
+            const res = await fetch(`${baseApiUrl}/api/encuestas/promedioRespuestasPorEncuesta`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            document.getElementById("stat-promedio").innerText = data;
+        } catch (err) {
+            console.error(" Error promedioRespuestasPorEncuesta:", err);
+            document.getElementById("stat-promedio").innerText = "Error";
+        }
+    }
+
+    async function cargarTotalEntrevistados() {
+        try {
+            const res = await fetch(`${baseApiUrl}/api/encuestas/totalAlumnosEntrevistados`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            document.getElementById("stat-entrevistados").innerText = data;
+        } catch (err) {
+            console.error("Error totalAlumnosEntrevistados:", err);
+            document.getElementById("stat-entrevistados").innerText = "Error";
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        cargarTotalRespondidas();
+        cargarTotalPendientes();
+        cargarPromedioRespuestas();
+        cargarTotalEntrevistados();
+    });
 </script>

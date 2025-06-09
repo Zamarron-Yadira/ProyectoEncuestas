@@ -12,10 +12,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
-
+    [ApiController]
 	[Authorize]
-	[Route("api/[controller]")]
-	[ApiController]
+	[Route("api/encuestas")]
+	
 	public class EncuestasController : ControllerBase
 	{
 
@@ -225,39 +225,44 @@ namespace EncuestasAPI.Controllers
 		}
 
 
-		[Authorize]
-		[HttpGet("estadisticas/totalencuestas")]
+		
+		[HttpGet("totalencuestas")]
 		public IActionResult GetTotalEncuestas()
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasCreadas());
 		}
 
-		[Authorize]
-		[HttpGet("estadisticas/totalrespondidas")]
-		public IActionResult GetTotalEncuestasRespondidas()
+		
+		[HttpGet("totalrespondidas")]
+		[AllowAnonymous]
+		public async Task <IActionResult> GetTotalEncuestasRespondidas()
 		{
-			return Ok(_estadisticasRepo.GetTotalEncuestasRespondidas());
+			var total = await Task.FromResult(_estadisticasRepo.GetTotalEncuestasRespondidas());
+			return Ok(total);
 		}
 
-		[Authorize]
-		[HttpGet("estadisticas/totalnorespondidas")]
-		public IActionResult GetTotalEncuestasSinResponder ()
+
+		[HttpGet("totalnorespondidas")]
+		public async Task <IActionResult> GetTotalEncuestasSinResponder ()
 		{
-			return Ok(_estadisticasRepo.GetTotalEncuestasSinResponder());
+			var total = await Task.FromResult(_estadisticasRepo.GetTotalEncuestasSinResponder());
+			return Ok(total);
 		}
 
-		[Authorize]
-		[HttpGet("estadisticas/promedioRespuestasPorEncuesta")]
-		public IActionResult GetPromedioRespuestasPorEncuesta()
+
+		[HttpGet("promedioRespuestasPorEncuesta")]
+		public async Task <IActionResult> GetPromedioRespuestasPorEncuesta()
 		{
-			return Ok(_estadisticasRepo.GetPromedioRespuestasPorEncuesta());
+			var total = await Task.FromResult(_estadisticasRepo.GetPromedioRespuestasPorEncuesta());
+			return Ok(total);
 		}
 
-		[Authorize]
-		[HttpGet("estadisticas/totalAlumnosEntrevistados")]
-		public IActionResult GetTotalAlumnosEntrevistados()
+
+		[HttpGet("totalAlumnosEntrevistados")]
+		public async Task <IActionResult> GetTotalAlumnosEntrevistados()
 		{
-			return Ok(_estadisticasRepo.GetTotalAlumnosEntrevistados());
+			var total = await Task.FromResult(_estadisticasRepo.GetTotalAlumnosEntrevistados());
+			return Ok(total);
 		}
 
 

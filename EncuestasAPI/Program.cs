@@ -33,25 +33,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		RoleClaimType = ClaimTypes.Role
 	};
 
-
 	options.Events = new JwtBearerEvents
 	{
 		OnAuthenticationFailed = context =>
 		{
-			Console.WriteLine($"🔴 Autenticación fallida: {context.Exception.Message}");
+			Console.WriteLine($"❌ JWT Auth failed: {context.Exception.Message}");
 			return Task.CompletedTask;
 		},
 		OnChallenge = context =>
 		{
-			Console.WriteLine($"🔴 Challenge fallido: {context.ErrorDescription}");
-			return Task.CompletedTask;
-		},
-		OnTokenValidated = context =>
-		{
-			Console.WriteLine($"✅ Token válido para: {context.Principal.Identity.Name}");
+			Console.WriteLine($"❌ JWT Challenge Error: {context.Error}, {context.ErrorDescription}");
 			return Task.CompletedTask;
 		}
 	};
+
 });
 
 
@@ -110,7 +105,7 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-				.WithOrigins("https://localhost:7058")
+				.WithOrigins("https://encuestasweb.websitos256.com")
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 				.AllowCredentials();
@@ -126,6 +121,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowFrontend");
+app.UseRouting();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
