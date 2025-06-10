@@ -15,16 +15,16 @@
 
         <div class="questions-list" id="questionsContainer">
             <div class="question-item">
-                <label class="question-text">1. ¿Qué tan satisfecho estás con el servicio?</label>
+                @* <label class="question-text">1. ¿Qué tan satisfecho estás con el servicio?</label>
                 <div class="rating-options">
                     <label><input type="radio" name="q1" value="1" required /><span>1</span></label>
                     <label><input type="radio" name="q1" value="2" /><span>2</span></label>
                     <label><input type="radio" name="q1" value="3" /><span>3</span></label>
                     <label><input type="radio" name="q1" value="4" /><span>4</span></label>
                     <label><input type="radio" name="q1" value="5" /><span>5</span></label>
-                </div>
+                </div> *@
             </div>
-
+@* 
             <div class="question-item">
                 <label class="question-text">2. ¿Cómo calificarías la atención recibida?</label>
                 <div class="rating-options">
@@ -34,7 +34,7 @@
                     <label><input type="radio" name="q2" value="4" /><span>4</span></label>
                     <label><input type="radio" name="q2" value="5" /><span>5</span></label>
                 </div>
-            </div>
+            </div> *@
 
 
         </div>
@@ -45,3 +45,135 @@
 
     </form>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const encuestaId = new URLSearchParams(window.location.search).get("id");
+        const idRespuesta = localStorage.getItem("idRespuesta");
+        const token = localStorage.getItem("token");
+
+        if (!encuestaId || !idRespuesta || !token) {
+            alert("Datos de sesión incompletos.");
+            window.location.href = "/Users/Index";
+            return;
+        }
+
+        await cargarPreguntas(encuestaId, token);
+
+        document.getElementById("surveyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await enviarRespuestas(idRespuesta, token);
+        });
+
+        document.querySelector(".cancel-button").addEventListener("click", async () => {
+            const confirmar = confirm("¿Cancelar la encuesta?");
+            if (!confirmar) return;
+
+            try {
+                await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
+                    method: "DELETE",
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                localStorage.removeItem("idRespuesta");
+                window.location.href = "/Users/Index";
+            } catch (err) {
+                console.error(err);
+                alert("Error al cancelar la encuesta.");
+            }
+        });
+    });
+
+    async function cargarPreguntas(encuestaId, token) {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+
+        try {
+            const res = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/con-preguntas/${encuestaId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error("Error al obtener preguntas");
+
+            const data = await res.json();
+            const preguntas = data.preguntas;
+
+            preguntas.forEach((pregunta, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question-item");
+
+                const label = document.createElement("label");
+                label.classList.add("question-text");
+                label.textContent = `${index + 1}. ${pregunta.descripcion}`;
+                questionDiv.appendChild(label);
+
+                const optionsDiv = document.createElement("div");
+                optionsDiv.classList.add("rating-options");
+
+                for (let i = 1; i <= 5; i++) {
+                    const optionLabel = document.createElement("label");
+                    const radio = document.createElement("input");
+
+                    radio.type = "radio";
+                    radio.name = `q${pregunta.id}`;
+                    radio.value = i;
+                    radio.required = true;
+
+                    const span = document.createElement("span");
+                    span.textContent = i;
+
+                    optionLabel.appendChild(radio);
+                    optionLabel.appendChild(span);
+                    optionsDiv.appendChild(optionLabel);
+                }
+
+                questionDiv.appendChild(optionsDiv);
+                container.appendChild(questionDiv);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("No se pudieron cargar las preguntas.");
+        }
+    }
+
+    async function enviarRespuestas(idRespuesta, token) {
+        const respuestas = [];
+
+        document.querySelectorAll(".question-item").forEach(div => {
+            const idPregunta = div.querySelector("input[type='radio']").name.replace("q", "");
+            const valor = div.querySelector("input[type='radio']:checked")?.value;
+
+            if (!valor) return;
+
+            respuestas.push({
+                idRespuesta: parseInt(idRespuesta),
+                idPregunta: parseInt(idPregunta),
+                valorEvaluacion: parseInt(valor)
+            });
+        });
+
+        if (respuestas.length === 0) {
+            alert("Debe responder todas las preguntas.");
+            return;
+        }
+
+        try {
+            const res = await fetch("https://apiencuestase8.websitos256.com/api/respuestas/responderPreguntas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(respuestas)
+            });
+
+            if (!res.ok) throw new Error("Error al guardar respuestas.");
+
+            alert("¡Gracias por responder!");
+            localStorage.removeItem("idRespuesta");
+            window.location.href = "/Users/Index"; // o a donde necesites redirigir
+        } catch (err) {
+            console.error(err);
+            alert("Hubo un problema al enviar las respuestas.");
+        }
+    }
+</script>

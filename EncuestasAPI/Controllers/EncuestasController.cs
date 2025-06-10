@@ -12,10 +12,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EncuestasAPI.Controllers
 {
-    [ApiController]
+	[ApiController]
 	[Authorize]
 	[Route("api/encuestas")]
-	
+
 	public class EncuestasController : ControllerBase
 	{
 
@@ -81,7 +81,7 @@ namespace EncuestasAPI.Controllers
 		public IActionResult GetByUsuario(int idUsuario)
 		{
 
-			var encuestas = _encuestaRepo.GetAll().Where(e=> e.IdUsuario == idUsuario).ToList();
+			var encuestas = _encuestaRepo.GetAll().Where(e => e.IdUsuario == idUsuario).ToList();
 			var dto = _mapper.Map<IEnumerable<EncuestaDTO>>(encuestas);
 			return Ok(dto);
 		}
@@ -98,7 +98,7 @@ namespace EncuestasAPI.Controllers
 					IdUsuario = idUsuario,
 					Titulo = dto.Titulo,
 					FechaCreacion = DateTime.Now,
-					Preguntas = dto.Preguntas.Select (P=> new Preguntas
+					Preguntas = dto.Preguntas.Select(P => new Preguntas
 					{
 						Descripcion = P.Descripcion,
 						NumeroPregunta = P.NumeroPregunta
@@ -149,7 +149,7 @@ namespace EncuestasAPI.Controllers
 			{
 				return NotFound("Encuesta no encontrada");
 			}
-				
+
 
 			return encuesta;
 		}
@@ -207,7 +207,7 @@ namespace EncuestasAPI.Controllers
 
 
 		[HttpDelete("{id}")]
-		public async Task <IActionResult> EliminarEncuesta(int id)
+		public async Task<IActionResult> EliminarEncuesta(int id)
 		{
 			var encuesta = _encuestaRepo.GetId(id);
 			if (encuesta == null)
@@ -225,23 +225,22 @@ namespace EncuestasAPI.Controllers
 		}
 
 
-		
+		[Authorize(Roles = "Admin")]
 		[HttpGet("totalencuestas")]
 		public IActionResult GetTotalEncuestas()
 		{
 			return Ok(_estadisticasRepo.GetTotalEncuestasCreadas());
 		}
 
-		
+		[Authorize(Roles = "Admin")]
 		[HttpGet("totalrespondidas")]
-		[AllowAnonymous]
 		public async Task <IActionResult> GetTotalEncuestasRespondidas()
 		{
 			var total = await Task.FromResult(_estadisticasRepo.GetTotalEncuestasRespondidas());
 			return Ok(total);
 		}
 
-
+		[Authorize(Roles = "Admin")]
 		[HttpGet("totalnorespondidas")]
 		public async Task <IActionResult> GetTotalEncuestasSinResponder ()
 		{
@@ -249,7 +248,7 @@ namespace EncuestasAPI.Controllers
 			return Ok(total);
 		}
 
-
+		[Authorize(Roles = "Admin")]
 		[HttpGet("promedioRespuestasPorEncuesta")]
 		public async Task <IActionResult> GetPromedioRespuestasPorEncuesta()
 		{
