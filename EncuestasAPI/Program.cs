@@ -107,7 +107,8 @@ builder.Services.AddCors(options =>
 			policy
 .WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com")
 				.AllowAnyMethod()
-				.AllowAnyHeader();
+				.AllowAnyHeader()
+			.AllowCredentials();
 		});
 });
 

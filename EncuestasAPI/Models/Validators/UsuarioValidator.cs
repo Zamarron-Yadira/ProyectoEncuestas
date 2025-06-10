@@ -63,7 +63,7 @@ namespace EncuestasAPI.Models.Validators
 			{
 				errores.Add("La contraseña está vacía.");
 			}
-			if (dto.Contrasena.Length >= 8)
+			if (dto.Contrasena.Length < 8)
 			{
 				errores.Add("La contraseña debe tener una longitud mínima de 8 carácteres.");
 			}

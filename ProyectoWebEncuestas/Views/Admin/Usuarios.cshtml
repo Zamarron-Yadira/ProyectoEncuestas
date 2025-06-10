@@ -5,11 +5,20 @@
 <main class="main-content">
     <section class="active-users">
         <h2>Lista de Usuarios</h2>
-        <ul class="user-list" id="listaUsuarios">
 
-        </ul>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha de Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="listaUsuarios">
+            
+            </tbody>
+        </table>
     </section>
-
 
     <button class="fab-add-user" onclick="goToAgregar()" title="Agregar nuevo usuario">＋</button>
 </main>
@@ -27,19 +36,22 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const usuarios = await response.json();
-            const lista = document.getElementById("listaUsuarios");
-            lista.innerHTML = ""; 
+            const tbody = document.getElementById("listaUsuarios");
+            tbody.innerHTML = "";
 
             usuarios.forEach(usuario => {
-                const item = document.createElement("li");
+                const tr = document.createElement("tr");
 
-                item.innerHTML = `
-                    <span><strong>${usuario.nombre}</strong> — ${new Date(usuario.fechaRegistro).toLocaleDateString()}</span>
-                    <a href="/Admin/EditarUsuario?id=${usuario.id}" class="edit-btn" title="Editar usuario">✏️</a>
-                   <a href="/Admin/EliminarUsuario?id=${usuario.id}" class="delete-btn" title="Eliminar usuario">🗑️</a>
+                tr.innerHTML = `
+                    <td>${usuario.nombre}</td>
+                    <td>${new Date(usuario.fechaRegistro).toLocaleDateString()}</td>
+                    <td>
+                        <a href="/Admin/EditarUsuario?id=${usuario.id}" class="edit-btn" title="Editar usuario">✏️</a>
+                        <a href="/Admin/EliminarUsuario?id=${usuario.id}" class="delete-btn" title="Eliminar usuario">🗑️</a>
+                    </td>
                 `;
 
-                lista.appendChild(item);
+                tbody.appendChild(tr);
             });
 
         } catch (error) {
