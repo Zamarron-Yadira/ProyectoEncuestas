@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EncuestasAPI.Helpers;
 using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
@@ -256,6 +257,13 @@ namespace EncuestasAPI.Controllers
 			return Ok(total);
 		}
 
+		[Authorize(Roles = "Admin")]
+		[HttpGet("EncuestaConTotalRespuestas")]
+		public async Task<IActionResult> GetEncuestaConTotalRespuestas()
+		{
+			var total = await Task.FromResult(_estadisticasRepo.GetEncuestasConTotalRespuestas());
+			return Ok(total);
+		}
 
 		[HttpGet("totalAlumnosEntrevistados")]
 		public async Task <IActionResult> GetTotalAlumnosEntrevistados()
@@ -263,6 +271,15 @@ namespace EncuestasAPI.Controllers
 			var total = await Task.FromResult(_estadisticasRepo.GetTotalAlumnosEntrevistados());
 			return Ok(total);
 		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("UsuariosAplicandoEncuestas")]
+		public IActionResult GetUsuariosAplicandoEncuestas()
+		{
+			var usuarios = UsuariosActivosStore.ObtenerUsuariosActivos();
+			return Ok(usuarios);
+		}
+
 
 
 	}

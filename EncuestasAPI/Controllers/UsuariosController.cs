@@ -96,11 +96,11 @@ namespace EncuestasAPI.Controllers
         {
 	       if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Contrasena))
 	       {
-		  return BadRequest("El nombre de usuario y contraseña son obligatorios.");
+			 return BadRequest("El nombre de usuario y contraseña son obligatorios.");
 	        }
 
 
-	       var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
+			var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
 	       if (usuario == null)
 			{
 				return Unauthorized("El usuario o contraseña son incorrectos");

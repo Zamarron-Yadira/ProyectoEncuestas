@@ -43,6 +43,18 @@ namespace EncuestasAPI.Repositories
 				.Distinct()
 				.Count();
 		}
+		public List<EncuestaConTotalRespuestasDTO> GetEncuestasConTotalRespuestas()
+		{
+			var encuestas = Context.Encuestas
+				.Select(e => new EncuestaConTotalRespuestasDTO
+				{
+					NombreEncuesta = e.Titulo,
+					TotalRespuestas = Context.Respuestas.Count(r => r.IdEncuesta == e.Id)
+				})
+				.ToList();
+
+			return encuestas;
+		}
 
 		//Preguntas
 		public int GetTotalPreguntas()
@@ -64,6 +76,5 @@ namespace EncuestasAPI.Repositories
 
 		//USUARIOS RESPONDIENDO:
 
-		
 	}
 }
