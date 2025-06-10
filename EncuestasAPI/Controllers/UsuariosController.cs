@@ -49,6 +49,29 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[Authorize(Roles = "Admin")]
+		[HttpGet("{id}")]
+		public IActionResult GetUsuarioPorId(int id)
+		{
+			var usuario = RepoUsuarios.GetId(id);
+
+			if (usuario == null)
+			{
+				return NotFound(new { mensaje = "Usuario no encontrado." });
+			}
+
+			var dto = new UsuarioResumenDTO
+			{
+				Id = usuario.Id,
+				Nombre = usuario.Nombre,
+				FechaRegistro = usuario.FechaRegistro,
+				EsAdmin = usuario.EsAdmin
+			};
+
+			return Ok(dto);
+		}
+
+
+		[Authorize(Roles = "Admin")]
 		[HttpGet("usuarios")]
 		public IActionResult GetUsuarios()
 		{

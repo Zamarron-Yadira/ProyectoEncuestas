@@ -256,7 +256,7 @@ namespace EncuestasAPI.Controllers
 			return Ok(total);
 		}
 
-
+		[Authorize(Roles = "Admin")]
 		[HttpGet("totalAlumnosEntrevistados")]
 		public async Task <IActionResult> GetTotalAlumnosEntrevistados()
 		{

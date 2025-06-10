@@ -3,8 +3,10 @@
 }
 
 <main class="main-content">
-    <form class="user-form">
-        <label class="confirm-label">¿Estás seguro de que deseas eliminar al usuario <strong>Juan Pérez</strong>?</label>
+    <form class="user-form" id="formEliminarUsuario">
+        <label class="confirm-label" id="mensajeConfirmacion">
+            Cargando información del usuario...
+        </label>
 
         <div class="form-buttons">
             <button type="submit" class="btn-primary">Aceptar</button>
@@ -12,3 +14,62 @@
         </div>
     </form>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const label = document.getElementById("mensajeConfirmacion");
+
+        if (!id) {
+            alert("ID de usuario no proporcionado.");
+            window.location.href = "/Admin/Usuarios";
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch(`https://apiencuestase8.websitos256.com/api/usuarios/${id}`, {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudo obtener la información del usuario.");
+            }
+
+            const usuario = await response.json();
+            label.innerHTML = `¿Estás seguro de que deseas eliminar al usuario <strong>${usuario.nombre}</strong>?`;
+
+            document.getElementById("formEliminarUsuario").addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                try {
+                    const deleteResponse = await fetch(`https://apiencuestase8.websitos256.com/api/usuarios/${id}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    });
+
+                    if (deleteResponse.ok) {
+                        alert("Usuario eliminado correctamente.");
+                        window.location.href = "/Admin/Usuarios";
+                    } else {
+                        const error = await deleteResponse.json();
+                        alert("Error al eliminar usuario:\n" + (error.mensaje || "Error desconocido."));
+                    }
+                } catch (error) {
+                    console.error("Error al intentar eliminar:", error);
+                    alert("Error de red. Intenta nuevamente más tarde.");
+                }
+            });
+
+        } catch (error) {
+            console.error("Error al obtener usuario:", error);
+            label.innerText = "No se pudo cargar la información del usuario.";
+        }
+    });
+</script>
