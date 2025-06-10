@@ -6,18 +6,7 @@ namespace EncuestasAPI.Hubs
 {
 	public class EstadisticasHub:Hub
 	{
-		//public override async Task OnConnectedAsync()
-		//{
-		//	var nombre = Context.User.Identity.Name ?? "Anónimo";
-		//	var connectionId = Context.ConnectionId;
-
-		//	UsuariosActivosStore.AgregarUsuario(connectionId, nombre);
-
-		//	// Notificar a todos
-		//	await Clients.All.SendAsync("UsuariosActivos", UsuariosActivosStore.ObtenerUsuariosActivos());
-
-		//	await base.OnConnectedAsync();
-		//}
+	
 		public override async Task OnConnectedAsync()
 		{
 			var nombre = Context.User.Identity?.Name;
@@ -33,7 +22,7 @@ namespace EncuestasAPI.Hubs
 			
 			// Notificar a todos
 			await Clients.All.SendAsync("UsuariosActivos", UsuariosActivosStore.ObtenerUsuariosActivos());
-
+			await Clients.All.SendAsync("ActualizarEstadisticas");
 
 			await base.OnConnectedAsync();
 		}
@@ -47,7 +36,7 @@ namespace EncuestasAPI.Hubs
 
 			// Notificar a todos
 			await Clients.All.SendAsync("UsuariosActivos", UsuariosActivosStore.ObtenerUsuariosActivos());
-
+			await Clients.All.SendAsync("ActualizarEstadisticas");
 			await base.OnDisconnectedAsync(exception);
 		}
 

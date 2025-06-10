@@ -53,17 +53,6 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
-		//[HttpGet("{id}")]
-		//public IActionResult GetById(int id)
-		//{
-		//	var encuesta = _encuestaRepo.GetId(id);
-		//	if (encuesta == null)
-		//	{
-		//		return NotFound();
-		//	}
-		//	var dto = _mapper.Map<EncuestaDTO>(encuesta);
-		//	return Ok(dto);
-		//}
 
 		[HttpGet("{id}")]
 		public IActionResult GetxId(int id)
