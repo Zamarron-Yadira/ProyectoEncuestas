@@ -58,7 +58,19 @@
 
             });
 
-            if (!response.ok) throw new Error("Error al registrar datos del alumno");
+               if (!response.ok) {
+              const errorMsg = await response.text();
+
+              if (errorMsg.includes("ya ha respondido")) {
+                alert("Este alumno ya ha respondido esta encuesta. Redirigiendo al inicio.");
+                localStorage.removeItem("idRespuesta");
+                window.location.href = "/Users/Index";
+              } else {
+                throw new Error(errorMsg || "Error al registrar datos del alumno");
+              }
+
+              return; // prevenir ejecución si hubo error
+            }
 
             const data = await response.json();
             const idRespuesta = data.idRespuesta;

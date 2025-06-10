@@ -57,6 +57,14 @@ namespace EncuestasAPI.Controllers
 		[HttpPost("registrarInicio")]
 		public async Task <IActionResult> RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
+			// Validar si ya respondió la encuesta
+			var yaRespondio = RespuestasRepository.GetAll().Any(r =>
+				r.IdEncuesta == dto.IdEncuesta &&
+				r.NumControlAlumno == dto.NumControlAlumno);
+
+			if (yaRespondio)
+				return BadRequest("Este alumno ya ha respondido esta encuesta.");
+
 			// Obtener el ID del usuario aplicador desde los claims del token
 			var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id");
 			if (userIdClaim == null)
