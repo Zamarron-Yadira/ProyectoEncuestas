@@ -6,6 +6,6 @@
 		public string Contrasena { get; set; } = null!;
 
 		public DateTime FechaRegistro { get; set; }
-		public int EsAdmin { get; set; }// 2 = No, 1 = Sí
+		public string EsAdmin { get; set; } = "";
 	}
 }

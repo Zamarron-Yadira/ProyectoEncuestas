@@ -13,7 +13,7 @@ public partial class Usuarios
 
     public DateTime FechaRegistro { get; set; }
 
-    public int EsAdmin { get; set; }
+    public string EsAdmin { get; set; } = null!;
 
     public virtual ICollection<Encuestas> Encuestas { get; set; } = new List<Encuestas>();
 

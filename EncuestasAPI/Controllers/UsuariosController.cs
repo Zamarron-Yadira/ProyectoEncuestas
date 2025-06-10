@@ -37,7 +37,7 @@ namespace EncuestasAPI.Controllers
 					Contrasena = dto.Contrasena,
 					Nombre = dto.Nombre,
 					FechaRegistro = DateTime.Now,
-					EsAdmin = dto.EsAdmin == 1 ? 1 : 2 
+					EsAdmin = dto.EsAdmin
 				};
 				RepoUsuarios.Insert(user);
 				return Ok();
@@ -47,6 +47,7 @@ namespace EncuestasAPI.Controllers
 				return BadRequest(errores);
 			}
 		}
+
 		[Authorize(Roles = "Admin")]
 		[HttpGet("usuarios")]
 		public IActionResult GetUsuarios()
@@ -55,13 +56,15 @@ namespace EncuestasAPI.Controllers
 
 			var lista = usuarios.Select(u => new UsuarioResumenDTO
 			{
+				Id = u.Id,
 				Nombre = u.Nombre,
 				FechaRegistro = u.FechaRegistro,
-				EsAdmin = u.EsAdmin == 1
+				EsAdmin = u.EsAdmin
 			}).ToList();
 
 			return Ok(lista);
 		}
+
 		[Authorize(Roles = "Admin")]
 		[HttpDelete("{id}")]
 		public IActionResult EliminarUsuario(int id)
@@ -88,33 +91,43 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[AllowAnonymous]
-		[HttpPost("login")]
-		public IActionResult Login([FromBody] LoginUsuarioDTO dto)
-		{
-			if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Contrasena))
-			{
-				return BadRequest("El nombre de usuario y contraseña son obligatorios.");
-			}
-			var token = Service.GenerarToken(dto);
-			var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginUsuarioDTO dto)
+        {
+	       if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Contrasena))
+	       {
+		  return BadRequest("El nombre de usuario y contraseña son obligatorios.");
+	        }
 
-			if (token == null)
+
+	       var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
+	       if (usuario == null)
 			{
 				return Unauthorized("El usuario o contraseña son incorrectos");
 			}
-			if (usuario == null)
-			{
-				return Unauthorized("No se encontró el usuario");
-			}
-			return Ok(new
-			{
-				token,
-				esAdmin = usuario.EsAdmin,
-				Id = usuario.Id,
-				nombre = usuario.Nombre
 
-			});
+			try
+			{
+				var token = Service.GenerarToken(usuario);
+				if (token == null)
+				{
+					return StatusCode(500, "No se pudo generar el token");
+				}
+
+				return Ok(new
+				{
+					token,
+					esAdmin = usuario.EsAdmin ?? "Usuario",
+					id = usuario.Id,
+					nombre = usuario.Nombre
+				});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Error generando token: {ex.Message}");
+			}
 		}
+
 
 	}
 }

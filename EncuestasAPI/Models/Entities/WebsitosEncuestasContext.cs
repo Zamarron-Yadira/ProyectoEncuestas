@@ -26,6 +26,10 @@ public partial class WebsitosEncuestasContext : DbContext
 
     public virtual DbSet<Usuarios> Usuarios { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("user=websitos_equipo8;password=equipo8Encuestas;server=APIEncuestasE8.websitos256.com;database=websitos_encuestas", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.8-mariadb"));
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -49,12 +53,10 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.HasOne(d => d.IdPreguntaNavigation).WithMany(p => p.Detallerespuestas)
                 .HasForeignKey(d => d.IdPregunta)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkIdPregunta");
 
             entity.HasOne(d => d.IdRespuestaNavigation).WithMany(p => p.Detallerespuestas)
                 .HasForeignKey(d => d.IdRespuesta)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkIdRespuesta");
         });
 
@@ -73,7 +75,6 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Encuestas)
                 .HasForeignKey(d => d.IdUsuario)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkIdusuario");
         });
 
@@ -92,7 +93,6 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.HasOne(d => d.IdEncuestaNavigation).WithMany(p => p.Preguntas)
                 .HasForeignKey(d => d.IdEncuesta)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkIdencuesta");
         });
 
@@ -115,12 +115,10 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.HasOne(d => d.IdEncuestaNavigation).WithMany(p => p.Respuestas)
                 .HasForeignKey(d => d.IdEncuesta)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkEncuestaId");
 
             entity.HasOne(d => d.IdUsuarioAplicadorNavigation).WithMany(p => p.Respuestas)
                 .HasForeignKey(d => d.IdUsuarioAplicador)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fkUsuarioAplicador");
         });
 
@@ -132,7 +130,7 @@ public partial class WebsitosEncuestasContext : DbContext
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Contrasena).HasMaxLength(10);
-            entity.Property(e => e.EsAdmin).HasColumnType("int(11)");
+            entity.Property(e => e.EsAdmin).HasMaxLength(10);
             entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
             entity.Property(e => e.Nombre).HasMaxLength(50);
         });

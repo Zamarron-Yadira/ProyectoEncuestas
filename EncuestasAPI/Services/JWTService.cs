@@ -19,42 +19,38 @@ namespace EncuestasAPI.Services
 		public IConfiguration Configuration { get; }
 		public Repository<Usuarios> ReposUsuarios { get; }
 
-		public string? GenerarToken(LoginUsuarioDTO dto)
+		public string? GenerarToken(Usuarios usuario)
 		{
-			//buscar si existe el usuario en la base de datos
-			var usuario = ReposUsuarios.GetAll().FirstOrDefault(x => x.Nombre == dto.Nombre && x.Contrasena == dto.Contrasena);
 			if (usuario == null)
 			{
-				return null; // Usuario no encontrado o credenciales incorrectas
+				return null;
 			}
-			else
-			{
-				//1. Crear claims
-				List<Claim> claims = new List<Claim>
-				{
-					new Claim("Id", usuario.Id.ToString()),
-					new Claim(ClaimTypes.Name, usuario.Nombre),
-					new Claim(ClaimTypes.Role, usuario.EsAdmin == 1? "Admin":"Usuario")
-				};
 
-				//2. Crear un descriptor de token con esos claims
+			// 1. Crear los claims
+			List<Claim> claims = new List<Claim>
+	{
+		new Claim("Id", usuario.Id.ToString()),
+		new Claim(ClaimTypes.Name, usuario.Nombre),
+        new Claim(ClaimTypes.Role, usuario.EsAdmin ?? "Usuario")
+	};
 
-				var descriptor = new JwtSecurityToken(
-					issuer: Configuration["Jwt:Issuer"],
-					audience: Configuration["Jwt:Audience"],
-					claims: claims,
-					notBefore: DateTime.UtcNow,
-					expires: DateTime.UtcNow.AddMinutes(30), // Expira en 30 minutos
-					signingCredentials: new SigningCredentials(
-	new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
-	SecurityAlgorithms.HmacSha256)
-					);
+			// 2. Crear descriptor del token
+			var descriptor = new JwtSecurityToken(
+				issuer: Configuration["Jwt:Issuer"],
+				audience: Configuration["Jwt:Audience"],
+				claims: claims,
+				notBefore: DateTime.UtcNow,
+				expires: DateTime.UtcNow.AddMinutes(30),
+				signingCredentials: new SigningCredentials(
+					new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
+					SecurityAlgorithms.HmacSha256)
+			);
 
-				//3. Crear JWT
-
-				var handler = new JwtSecurityTokenHandler();
-				return handler.WriteToken(descriptor);
-			}
+			// 3. Generar y retornar token
+			var handler = new JwtSecurityTokenHandler();
+			return handler.WriteToken(descriptor);
 		}
+
+
 	}
 }

@@ -105,10 +105,9 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-				.WithOrigins("https://encuestasweb.websitos256.com")
+.WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com")
 				.AllowAnyMethod()
-				.AllowAnyHeader()
-				.AllowCredentials();
+				.AllowAnyHeader();
 		});
 });
 
@@ -120,10 +119,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowFrontend");
-app.UseRouting();
-app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontend"); 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
