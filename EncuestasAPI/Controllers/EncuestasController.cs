@@ -156,7 +156,9 @@ namespace EncuestasAPI.Controllers
 				return NotFound("La encuesta no existe.");
 
 			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-			if (encuesta.IdUsuario != idUsuario)
+			var rolUsuario = User.FindFirst("esAdmin")?.Value ?? "";
+
+			if (encuesta.IdUsuario != idUsuario && rolUsuario != "Admin")
 				return Forbid("No tienes permiso para editar esta encuesta.");
 
 			// si alguien ya la contestó/aplico no se podrá editar
@@ -198,7 +200,6 @@ namespace EncuestasAPI.Controllers
 		[HttpDelete("preguntas/{id}")]
 		public async Task<IActionResult> EliminarPregunta(int id)
 		{
-			// Buscar la pregunta por id
 			var pregunta = _preguntaRepo.GetId(id);
 			if (pregunta == null)
 				return NotFound("La pregunta no existe.");
@@ -207,8 +208,11 @@ namespace EncuestasAPI.Controllers
 			if (encuesta == null)
 				return NotFound("Encuesta asociada no encontrada.");
 
-			// Obtener id del usuario actual desde token
 			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+			var rolUsuario = User.FindFirst("esAdmin")?.Value ?? "";
+
+			if (encuesta.IdUsuario != idUsuario && rolUsuario != "Admin")
+				return Forbid("No tienes permiso para eliminar esta pregunta.");
 
 			if (_respuestasRepo.GetAll().Any(r => r.IdEncuesta == encuesta.Id))
 				return BadRequest("No se puede eliminar pregunta de una encuesta ya respondida.");
@@ -227,23 +231,23 @@ namespace EncuestasAPI.Controllers
 			if (encuesta == null)
 				return NotFound("La encuesta no existe.");
 
-
 			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-			if (encuesta.IdUsuario != idUsuario)
+			var rolUsuario = User.FindFirst("esAdmin")?.Value ?? "";
+
+
+			if (encuesta.IdUsuario != idUsuario && rolUsuario != "Admin")
 				return Forbid("No tienes permiso para eliminar esta encuesta.");
 
-			// si alguien ya la contestó/aplico no se podrá editar
-			var respuestas = _respuestasRepo.GetAll().Where(r => r.IdEncuesta == id).ToList();
-			Console.WriteLine($"Respuestas encontradas para encuesta {id}: {respuestas.Count}");
 
+			var respuestas = _respuestasRepo.GetAll().Where(r => r.IdEncuesta == id).ToList();
 			if (respuestas.Any())
 				return BadRequest("No se puede eliminar una encuesta que ya ha sido respondida.");
 
 			_encuestaRepo.Delete(id);
-
 			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
 
 			return Ok("Encuesta eliminada correctamente.");
+
 		}
 
 

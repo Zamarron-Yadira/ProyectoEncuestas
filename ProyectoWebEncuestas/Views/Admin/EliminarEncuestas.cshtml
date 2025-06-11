@@ -20,8 +20,15 @@
 <script>
     const encuestaId = new URLSearchParams(window.location.search).get("id");
     const token = localStorage.getItem("token");
+    const esAdmin = localStorage.getItem("esAdmin");
 
-    // Obtener y mostrar el nombre de la encuesta
+    
+    if (esAdmin !== "Admin") {
+        alert("No tienes permiso para acceder a esta sección.");
+        window.location.href = "/Home/Login"; 
+    }
+
+
     window.onload = function () {
         fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${encuestaId}`, {
             headers: {
