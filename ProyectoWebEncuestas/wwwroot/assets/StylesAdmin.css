@@ -148,6 +148,89 @@
     margin: auto;
 }
 
+
+.container {
+    max-width: 960px;
+    margin: 80px auto 40px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Input filtro */
+#fechaFiltro {
+    padding: 6px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+.featured-surveys, .all-surveys {
+    margin-bottom: 30px;
+}
+
+    .featured-surveys h2, .all-surveys h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+
+/* Lista de encuestas */
+.survey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.survey-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.survey-info {
+    flex: 1;
+}
+
+.card-surv {
+    position: relative;
+    border-radius: 8px;
+}
+
+.survey-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+
+.survey-card:hover {
+    background-color: #e9f3ff;
+}
+
 /* Tarjetas de estadísticas */
 .stats-grid {
     display: grid;
@@ -273,6 +356,24 @@
 
     .delete-btn:hover, .edit-btn:hover {
         transform: scale(1.2);
+    }
+
+.add-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    font-size: 32px;
+    padding: 12px 20px;
+    border-radius: 50%;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+}
+
+    .add-button:hover {
+        background-color: #218838;
     }
 
 /* Alinear correctamente el contenido de la lista de usuarios */
@@ -406,6 +507,41 @@
     color: #007bff;
     font-weight: bold;
 }
+
+
+.survey-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+.survey-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.question-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+    .question-list li {
+        background-color: #f9f9f9;
+        padding: 14px 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        color: #444;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
 
 
 /* Responsivo */
