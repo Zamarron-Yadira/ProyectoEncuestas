@@ -1,5 +1,5 @@
 ﻿@{
-	Layout = "_LayoutAdmin";
+    Layout = "_LayoutAdmin";
 }
 <main class="main-content">
     <div class="container">
@@ -8,8 +8,8 @@
         <section class="filter-section">
             <label for="fechaFiltro" class="filter-label">Filtrar por fecha:</label>
             <input type="date" id="fechaFiltro" />
+            <button id="quitarFiltro" style="display:none;">Quitar filtro</button>
         </section>
-
 
         <div class="survey-list" id="encuestasContainer"></div>
 
@@ -39,7 +39,7 @@
             }
 
             const encuestas = await response.json();
-            encuestasGlobal = encuestas; 
+            encuestasGlobal = encuestas;
             renderizarEncuestas(encuestas);
         } catch (error) {
             console.error(error);
@@ -60,15 +60,19 @@
             const card = document.createElement("div");
             card.className = "card-surv";
 
-            const fecha = new Date(encuesta.fechaCreacion).toISOString().split("T")[0]; 
+            const fechaISO = new Date(encuesta.fechaCreacion).toISOString().split("T")[0];
 
             card.innerHTML = `
-                <a href="/Admin/DetalleEncuestas?id=${encuesta.id}" class="survey-card" data-fecha="${fecha}">
-                    <div class="survey-info">
+                <div class="survey-card" data-fecha="${fechaISO}">
+                    <a href="/Admin/DetalleEncuestas?id=${encuesta.id}" class="survey-info">
                         <strong>${encuesta.titulo}</strong><br />
                         <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
+                    </a>
+                    <div class="survey-actions">
+                        <a href="/Admin/EditarEncuesta?id=${encuesta.id}" class="edit-btn" title="Editar encuesta">✏️</a>
+                        <a href="/Admin/EliminarEncuesta?id=${encuesta.id}" class="delete-btn" title="Eliminar encuesta">🗑️</a>
                     </div>
-                </a>
+                </div>
             `;
 
             container.appendChild(card);
@@ -78,14 +82,29 @@
     document.addEventListener("DOMContentLoaded", () => {
         cargarEncuestas();
 
-        document.getElementById("fechaFiltro").addEventListener("input", function () {
+        const fechaInput = document.getElementById('fechaFiltro');
+        const btnQuitarFiltro = document.getElementById('quitarFiltro');
+
+        fechaInput.addEventListener("input", function () {
             const filtro = this.value;
+            if (filtro) {
+                btnQuitarFiltro.style.display = "inline";
+            } else {
+                btnQuitarFiltro.style.display = "none";
+            }
+
             const filtradas = encuestasGlobal.filter(e => {
                 const fecha = new Date(e.fechaCreacion).toISOString().split("T")[0];
-                return !filtro || fecha >= filtro;
+                return !filtro || fecha.startsWith(filtro);
             });
 
             renderizarEncuestas(filtradas);
+        });
+
+        btnQuitarFiltro.addEventListener("click", () => {
+            fechaInput.value = "";
+            btnQuitarFiltro.style.display = "none";
+            renderizarEncuestas(encuestasGlobal);
         });
     });
 </script>
