@@ -50,20 +50,21 @@
         const div = document.createElement("div");
         div.className = "form-group question-item" ;
 
-           div.innerHTML = `
+              div.innerHTML = `
         <div class="question-input-wrapper">
-          <div class="text-input-group">
-            <label for="question${questionCount}">Pregunta:</label>
-            <input type="text" id="question${questionCount}" name="questions[]" required />
-          </div>
-          <div class="number-input-group">
-            <label for="questionNumber${questionCount}">Número:</label>
-            <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
-          </div>
-          <button type="button" class="delete-buttonn" onclick="eliminarPregunta(0, this)">🗑️</button>
-
+            <div class="text-input-group">
+                <label>Pregunta:</label>
+                <input type="text" name="questions[]" required />
+            </div>
+            <div class="number-input-group">
+                <label>Número:</label>
+                <input type="text" name="questionNumbers[]" value="${questionCount}" required />
+            </div>
+            <div class="button-group-inline">
+                <button type="button" class="delete-buttonn" onclick="eliminarPregunta(0, this)">🗑️</button>
+            </div>
         </div>
-      `;
+    `;
 
       container.appendChild(div);
         actualizarEstadoBoton();   // Deshabilitar el botón si ya se alcanzó el máximo
@@ -101,26 +102,28 @@
             const container = document.getElementById("questionsContainer");
             container.innerHTML = "";
 
-            encuesta.preguntas.forEach((p, i) => {
-                const div = document.createElement("div");
-                div.className = "form-group question-item";
-                div.dataset.id = p.id;
-                div.innerHTML = `
-                    <input type="hidden" name="questionIds[]" value="${p.id}" />
-                    <div class="question-input-wrapper">
-                        <div class="text-input-group">
-                            <label>Pregunta:</label>
-                            <input type="text" name="questions[]" value="${p.descripcion}" required />
-                        </div>
-                        <div class="number-input-group">
-                            <label>Número:</label>
-                            <input type="number" name="questionNumbers[]" value="${p.numeroPregunta}" required min="1" max="10" />
-                        </div>
-                        <button type="button" class="delete-buttonn" onclick="eliminarPregunta(${p.id}, this)">🗑️</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+                encuesta.preguntas.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "form-group question-item";
+        div.dataset.id = p.id;
+        div.innerHTML = `
+            <input type="hidden" name="questionIds[]" value="${p.id}" />
+            <div class="question-input-wrapper">
+                <div class="text-input-group">
+                    <label>Pregunta:</label>
+                    <input type="text" name="questions[]" value="${p.descripcion}" required />
+                </div>
+                <div class="number-input-group">
+                    <label>Número:</label>
+                    <input type="number" name="questionNumbers[]" value="${p.numeroPregunta}" required min="1" max="10" />
+                </div>
+                <div class="button-group-inline">
+                    <button type="button" class="delete-buttonn" onclick="eliminarPregunta(${p.id}, this)">🗑️</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
 
             questionCount = encuesta.preguntas.length;
             actualizarEstadoBoton();

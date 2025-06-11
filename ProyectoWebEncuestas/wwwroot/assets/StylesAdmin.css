@@ -675,7 +675,30 @@
         color: #444;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+.delete-buttonn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    align-self: center;
+    margin-top: 20px;
+    margin-left: 20px; 
+}
 
+    .delete-buttonn:hover {
+        background-color: #c82333;
+    }
+
+    .delete-buttonn:active {
+        background-color: #bd2130;
+    }
  /*Parte de agregar encuestas en admin*/
 
     .form-group {
@@ -710,6 +733,7 @@
 
     .question-input-wrapper {
         display: flex;
+        gap:1rem;
         flex-wrap: wrap;
         gap: 10px;
         width: 98%;
@@ -743,11 +767,8 @@
         flex-direction: column;
     }
 
-    .delete-buttonn {
-        align-self: flex-start;
-        margin-top: -49px;
-        margin-left: 70px;
-    }
+
+
 
     .button-group {
         display: flex;
