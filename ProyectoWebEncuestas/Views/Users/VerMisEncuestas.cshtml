@@ -8,6 +8,7 @@
         <section class="filter-section">
             <label for="fechaFiltro" class="filter-label">Filtrar por fecha:</label>
             <input type="date" id="fechaFiltro" />
+            <button id="quitarFiltro" class="btn-clear-filter">Limpiar filtro</button>
         </section>
 
         <div class="card-surv" id="encuestasContainer">
@@ -50,8 +51,10 @@
                 const card = document.createElement("div");
                 card.className = "card-surv";
 
+                  const fechaISO = new Date(encuesta.fechaCreacion).toISOString().split("T")[0]; // yyyy-mm-dd
+
                 card.innerHTML = `
-                      <a  href="/Users/DetalleEncuesta?id=${encuesta.id}" class="survey-card">
+                      <a  href="/Users/DetalleEncuesta?id=${encuesta.id}" class="survey-card" data-fecha="${fechaISO}">
                         <div class="survey-info">
                        <strong>${encuesta.titulo}</strong><br />
                        <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
@@ -75,23 +78,43 @@
     window.addEventListener("DOMContentLoaded", cargarMisEncuestas);
 
     // Función para filtrar encuestas por fecha
-    document.getElementById('fechaFiltro').addEventListener('input', function() {
-      const filtro = this.value; // yyyy-mm-dd
-      const allSurveys = document.querySelectorAll('#allSurveys .survey-card');
-      const featuredSurveys = document.querySelectorAll('#featuredSurveys .survey-card');
+        const fechaInput = document.getElementById('fechaFiltro');
+    const btnQuitarFiltro = document.getElementById('quitarFiltro');
 
-      function filtrarEncuestas(lista) {
-        lista.forEach(encuesta => {
-          const fechaEncuesta = encuesta.getAttribute('data-fecha');
-          if (!filtro || fechaEncuesta >= filtro) {
-            encuesta.style.display = 'block';
-          } else {
-            encuesta.style.display = 'none';
-          }
+     btnQuitarFiltro.style.display = 'none';
+
+
+    fechaInput.addEventListener('input', function () {
+        const filtro = this.value; // yyyy, yyyy-mm, yyyy-mm-dd
+        const encuestas = document.querySelectorAll('#encuestasContainer .survey-card');
+
+        if (filtro) {
+            btnQuitarFiltro.style.display = 'inline';
+        } else {
+            btnQuitarFiltro.style.display = 'none';
+        }
+
+        encuestas.forEach(encuesta => {
+            const fecha = encuesta.getAttribute('data-fecha');
+
+            if (!filtro || fecha.startsWith(filtro)) {
+                encuesta.style.display = 'block';
+            } else {
+                encuesta.style.display = 'none';
+            }
         });
-      }
-
-      filtrarEncuestas(allSurveys);
-      filtrarEncuestas(featuredSurveys);
     });
+
+    btnQuitarFiltro.addEventListener('click', function () {
+        fechaInput.value = "";
+        this.style.display = 'none';
+
+        // Mostrar todas las encuestas
+        const encuestas = document.querySelectorAll('#encuestasContainer .survey-card');
+        encuestas.forEach(encuesta => {
+            encuesta.style.display = 'block';
+        });
+    });
+
+
 </script>

@@ -681,3 +681,18 @@ input[type="text"] {
   border-radius: 6px;
   font-size: 1rem;
 }
+.btn-clear-filter {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .btn-clear-filter:hover {
+        background-color: #5a6268;
+    }
