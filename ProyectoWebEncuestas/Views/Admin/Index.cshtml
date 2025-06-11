@@ -13,13 +13,20 @@
             <span class="stat-number" id="stat-pendientes">...</span>
         </div>
         <div class="stat-card">
-            <div class="stat-title">Respuestas por encuesta</div>
+            <div class="stat-title">Promedio de respuestas por encuesta</div>
             <span class="stat-number" id="stat-promedio">...</span>
         </div>
+
         <div class="stat-card">
             <div class="stat-title">Total de alumnos entrevistados</div>
             <span class="stat-number" id="stat-entrevistados">...</span>
         </div>
+    </section>
+
+    <section class="encuestas-lista">
+        <h2 class="seccion-titulo">Total de Respuestas por encuesta</h2>
+        <ul class="encuestas-ul">
+        </ul>
     </section>
 
     <section class="active-users">
@@ -47,9 +54,11 @@
         cargarTotalPendientes();
         cargarPromedioRespuestas();
         cargarTotalEntrevistados();
+        cargarEncuestasConRespuestas();
     });
 
-    connection.on("UsuariosActivos", (usuarios) => {
+
+        connection.on("UsuariosActivos", (usuarios) => {
         const lista = document.getElementById("lista-usuarios");
         lista.innerHTML = "";
 
@@ -65,13 +74,38 @@
         });
     });
 
-    connection.start()
-        .then(() => {
-            console.log(" Conectado a SignalR");
-        })
-        .catch(err => {
-            console.error(" Error al conectar a SignalR:", err);
-        });
+connection.start()
+    .then(() => {
+        console.log("✅ Conectado a SignalR");
+
+        // ✅ Ahora sí puedes invocar al método del Hub
+        connection.invoke("GetUsuariosActivos")
+            .then(data => {
+                console.log("Usuarios activos actuales:", data);
+
+                // Mostrar los usuarios activos en la lista
+                const lista = document.getElementById("lista-usuarios");
+                lista.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    lista.innerHTML = "<li><em>No hay usuarios activos</em></li>";
+                    return;
+                }
+
+                data.forEach(nombre => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<span>${nombre}</span>`;
+                    lista.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error("❌ Error al invocar GetUsuariosActivos:", err);
+            });
+
+    })
+    .catch(err => {
+        console.error("❌ Error al conectar a SignalR:", err);
+    });
 
 
     async function cargarTotalRespondidas() {
@@ -129,11 +163,43 @@
             document.getElementById("stat-entrevistados").innerText = "Error";
         }
     }
+    async function cargarEncuestasConRespuestas() {
+        try {
+            const res = await fetch(`${baseApiUrl}/api/encuestas/EncuestaConTotalRespuestas`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const encuestas = await res.json();
+            const listaEncuestas = document.querySelector(".encuestas-ul");
+            listaEncuestas.innerHTML = ""; // Limpiar lista anterior
+
+            if (encuestas.length === 0) {
+                listaEncuestas.innerHTML = "<li><em>No hay encuestas disponibles</em></li>";
+                return;
+            }
+
+           encuestas.slice(0, 10).forEach(encuesta => {
+            const li = document.createElement("li");
+            li.classList.add("encuesta-item");
+            li.innerHTML = `
+                <span class="nombre-encuesta">${encuesta.nombreEncuesta}</span>
+                <span class="contador-respuestas">${encuesta.totalRespuestas} respuestas</span>
+            `;
+            listaEncuestas.appendChild(li);
+        });
+
+        } catch (err) {
+            console.error("❌ Error al cargar encuestas con respuestas:", err);
+        }
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
         cargarTotalRespondidas();
         cargarTotalPendientes();
         cargarPromedioRespuestas();
         cargarTotalEntrevistados();
+        cargarEncuestasConRespuestas();
     });
 </script>

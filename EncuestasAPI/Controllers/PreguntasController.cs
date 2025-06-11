@@ -74,24 +74,9 @@ namespace EncuestasAPI.Controllers
 
 			return Ok("Pregunta actualizada correctamente.");
 		}
-		
-		
 
 
-		[Authorize(Roles = "Admin")]
-		[HttpGet("estadisticas/totalpreguntas")]
-		public IActionResult GetTotalPreguntas()
-		{
-			return Ok(EstadisticasRepo.GetTotalPreguntas());
-		}
-
-		[Authorize(Roles = "Admin")]
-		[HttpGet("respuestasxpreguntas")]
-		public ActionResult<List<RespuestasPorPreguntasDTO>> GetRespuestasPorPregunta()
-		{
-			var data = EstadisticasRepo.GetCantidadRespuestasPorPregunta();
-			return Ok(data);
-		}		
+	
 
 	}
 }

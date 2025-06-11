@@ -4,23 +4,11 @@
 <main class="container">
     <form id="editSurveyForm">
         <div class="form-group">
-            <label for="surveyName">Nombre de la encuesta</label>
+            <label for="surveyName">Nombre de la encuesta:</label>
             <input type="text" id="surveyName" name="surveyName" required />
         </div>
 
         <div id="questionsContainer">
-            <div class="form-group question-item">
-                <div class="question-input-wrapper">
-                    <div class="text-input-group">
-                        <label for="question1">Pregunta:</label>
-                        <input type="text" id="question1" name="questions[]" required />
-                    </div>
-                    <div class="number-input-group">
-                        <label for="questionNumber1">Número:</label>
-                        <input type="text" id="questionNumber1" name="questionNumbers[]" />
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="button-group">
             <button type="button" id="btnAddQuestion" class="btn-add" onclick="addQuestion()">Agregar otra pregunta</button>
@@ -35,17 +23,32 @@
 
 <script>
       let questionCount = 0;
+      const maxQuestions = 10;
+
+
+        function actualizarEstadoBoton() {
+        const btn = document.getElementById("btnAddQuestion");
+        if (questionCount >= maxQuestions) {
+            btn.disabled = true;
+            btn.style.backgroundColor = "gray";
+        } else {
+            btn.disabled = false;
+            btn.style.backgroundColor = "";
+        }
+    }
+
+
       // Función para agregar nuevas preguntas
       function addQuestion() {
-        if (questionCount >= 10) {
-          alert("Solo se permiten hasta 10 preguntas.");
-          return;
+       if (questionCount >= maxQuestions) {
+            alert("Solo se permiten hasta 10 preguntas.");
+            return;
         }
         questionCount++;
 
         const container = document.getElementById("questionsContainer");
         const div = document.createElement("div");
-        div.className = "form-group question-item";
+        div.className = "form-group question-item" ;
 
            div.innerHTML = `
         <div class="question-input-wrapper">
@@ -57,31 +60,29 @@
             <label for="questionNumber${questionCount}">Número:</label>
             <input type="text" id="questionNumber${questionCount}" name="questionNumbers[]" value="${questionCount}" required />
           </div>
+          <button type="button" class="delete-buttonn" onclick="eliminarPregunta(0, this)">🗑️</button>
+
         </div>
       `;
 
       container.appendChild(div);
-         // Deshabilitar el botón si ya se alcanzó el máximo
-        if (questionCount >= 10) {
-            alert("Solo se permiten hasta 10 preguntas.");
-          document.getElementById("btnAddQuestion").disabled = true;
-           
-        }
+        actualizarEstadoBoton();   // Deshabilitar el botón si ya se alcanzó el máximo
+
+
     }
+
 
     document.addEventListener("DOMContentLoaded", async function () {
         const params = new URLSearchParams(window.location.search);
         const id = params.get("id");
         const token = localStorage.getItem("token");
 
-
         if (!id || !token) {
             alert("Token o ID de encuesta no encontrado.");
             window.location.href = "/Login";
             return;
         }
-            console.log("Usando token:", token);
-    console.log("URL final:", `https://apiencuestase8.websitos256.com/api/encuestas/con-preguntas/${id}`);
+
         try {
             const res = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/con-preguntas/${id}`, {
                 headers: {
@@ -101,28 +102,28 @@
             container.innerHTML = "";
 
             encuesta.preguntas.forEach((p, i) => {
-                container.innerHTML += `
-                    <div class="form-group question-item">
-                        <input type="hidden" name="questionIds[]" value="${p.id}" />
-                        <div class="question-input-wrapper">
-                            <div class="text-input-group">
-                                <label>Pregunta:</label>
-                                <input type="text" name="questions[]" value="${p.descripcion}" required />
-                            </div>
-                            <div class="number-input-group">
-                                <label>Número:</label>
-                                <input type="number" name="questionNumbers[]" value="${p.numeroPregunta}" required min="1" max="10" />
-                            </div>
+                const div = document.createElement("div");
+                div.className = "form-group question-item";
+                div.dataset.id = p.id;
+                div.innerHTML = `
+                    <input type="hidden" name="questionIds[]" value="${p.id}" />
+                    <div class="question-input-wrapper">
+                        <div class="text-input-group">
+                            <label>Pregunta:</label>
+                            <input type="text" name="questions[]" value="${p.descripcion}" required />
                         </div>
+                        <div class="number-input-group">
+                            <label>Número:</label>
+                            <input type="number" name="questionNumbers[]" value="${p.numeroPregunta}" required min="1" max="10" />
+                        </div>
+                        <button type="button" class="delete-buttonn" onclick="eliminarPregunta(${p.id}, this)">🗑️</button>
                     </div>
                 `;
+                container.appendChild(div);
             });
-            questionCount = encuesta.preguntas.length;
 
-            if (questionCount >= 10) {
-              document.getElementById("btnAddQuestion").disabled = true;
-                document.getElementById("btnAddQuestion").style.backgroundColor = "gray";
-            }
+            questionCount = encuesta.preguntas.length;
+            actualizarEstadoBoton();
 
         } catch (err) {
             console.error("Error al cargar encuesta:", err.message);
@@ -144,7 +145,6 @@
         const questionIds = document.getElementsByName("questionIds[]");
 
         const preguntas = [];
-
         for (let i = 0; i < questionDescs.length; i++) {
             preguntas.push({
                 id: questionIds[i]?.value ? parseInt(questionIds[i].value) : 0,
@@ -153,12 +153,14 @@
             });
         }
 
+        try {
+
+        // ✅ Ahora actualizar la encuesta
         const payload = {
             titulo: titulo,
             preguntas: preguntas
         };
 
-        try {
             const res = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${id}`, {
                 method: "PUT",
                 headers: {
@@ -186,5 +188,53 @@
           window.history.back();
         }
       }
+
+        async function eliminarPregunta(id, button) {
+        if (!id || id === 0) {
+            // Pregunta nueva que no está en BD aún, solo eliminar del DOM
+            const item = button.closest(".question-item");
+            if (item) item.remove();
+            questionCount--;
+            actualizarEstadoBoton();
+            return;
+        }
+
+        if (!confirm("¿Estás seguro de eliminar esta pregunta?")) return;
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("No se encontró token de autorización.");
+            return;
+        }
+
+        try {
+            const resDel = await fetch(`https://apiencuestase8.websitos256.com/api/encuestas/preguntas/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!resDel.ok) {
+                const errorText = await resDel.text();
+                alert(`Error al eliminar pregunta: (${resDel.status}) ${errorText}`);
+                return;
+            }
+
+            alert("Pregunta eliminada correctamente.");
+
+            // Eliminar visualmente
+            const item = button.closest(".question-item");
+            if (item) item.remove();
+
+            questionCount--;
+            actualizarEstadoBoton();
+
+        } catch (error) {
+            console.error("Error al eliminar pregunta:", error);
+            alert("Error de red al eliminar la pregunta.");
+        }
+    }
+
 
 </script>

@@ -389,6 +389,23 @@
     color: #d32f2f;
     font-weight: bold;
 }
+.encuestas-ul .encuesta-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.nombre-encuesta {
+    color: #333;
+    font-weight: 500;
+}
+
+.contador-respuestas {
+    color: #007bff;
+    font-weight: bold;
+}
 
 
 /* Responsivo */

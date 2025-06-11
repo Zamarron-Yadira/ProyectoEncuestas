@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EncuestasAPI.Helpers;
 using EncuestasAPI.Hubs;
 using EncuestasAPI.Models.DTOs;
 using EncuestasAPI.Models.Entities;
@@ -52,17 +53,6 @@ namespace EncuestasAPI.Controllers
 			return Ok(dto);
 		}
 
-		//[HttpGet("{id}")]
-		//public IActionResult GetById(int id)
-		//{
-		//	var encuesta = _encuestaRepo.GetId(id);
-		//	if (encuesta == null)
-		//	{
-		//		return NotFound();
-		//	}
-		//	var dto = _mapper.Map<EncuestaDTO>(encuesta);
-		//	return Ok(dto);
-		//}
 
 		[HttpGet("{id}")]
 		public IActionResult GetxId(int id)
@@ -205,6 +195,30 @@ namespace EncuestasAPI.Controllers
 			return Ok("Encuesta actualizada correctamente.");
 		}
 
+		[HttpDelete("preguntas/{id}")]
+		public async Task<IActionResult> EliminarPregunta(int id)
+		{
+			// Buscar la pregunta por id
+			var pregunta = _preguntaRepo.GetId(id);
+			if (pregunta == null)
+				return NotFound("La pregunta no existe.");
+
+			var encuesta = _encuestaRepo.GetId(pregunta.IdEncuesta);
+			if (encuesta == null)
+				return NotFound("Encuesta asociada no encontrada.");
+
+			// Obtener id del usuario actual desde token
+			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+
+			if (_respuestasRepo.GetAll().Any(r => r.IdEncuesta == encuesta.Id))
+				return BadRequest("No se puede eliminar pregunta de una encuesta ya respondida.");
+
+			_preguntaRepo.Delete(id);
+			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
+			return Ok("Pregunta eliminada correctamente.");
+		}
+
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> EliminarEncuesta(int id)
@@ -257,12 +271,28 @@ namespace EncuestasAPI.Controllers
 		}
 
 		[Authorize(Roles = "Admin")]
+		[HttpGet("EncuestaConTotalRespuestas")]
+		public async Task<IActionResult> GetEncuestaConTotalRespuestas()
+		{
+			var total = await Task.FromResult(_estadisticasRepo.GetEncuestasConTotalRespuestas());
+			return Ok(total);
+		}
+
 		[HttpGet("totalAlumnosEntrevistados")]
 		public async Task <IActionResult> GetTotalAlumnosEntrevistados()
 		{
 			var total = await Task.FromResult(_estadisticasRepo.GetTotalAlumnosEntrevistados());
 			return Ok(total);
 		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("UsuariosAplicandoEncuestas")]
+		public IActionResult GetUsuariosAplicandoEncuestas()
+		{
+			var usuarios = UsuariosActivosStore.ObtenerUsuariosActivos();
+			return Ok(usuarios);
+		}
+
 
 
 	}

@@ -30,7 +30,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 		ValidateLifetime = true,
 		ClockSkew = TimeSpan.Zero,
-		RoleClaimType = ClaimTypes.Role
+		RoleClaimType = ClaimTypes.Role,
+		NameClaimType = ClaimTypes.Name
 	};
 
 	options.Events = new JwtBearerEvents
@@ -105,7 +106,7 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-.WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com")
+				.WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com")
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 			.AllowCredentials();
@@ -128,6 +129,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<EstadisticasHub>("/hubs/estadisticas");
-app.MapHub<EncuestasHub>("/hubs/encuestas");
 app.UseFileServer();
 app.Run();
