@@ -195,6 +195,30 @@ namespace EncuestasAPI.Controllers
 			return Ok("Encuesta actualizada correctamente.");
 		}
 
+		[HttpDelete("preguntas/{id}")]
+		public async Task<IActionResult> EliminarPregunta(int id)
+		{
+			// Buscar la pregunta por id
+			var pregunta = _preguntaRepo.GetId(id);
+			if (pregunta == null)
+				return NotFound("La pregunta no existe.");
+
+			var encuesta = _encuestaRepo.GetId(pregunta.IdEncuesta);
+			if (encuesta == null)
+				return NotFound("Encuesta asociada no encontrada.");
+
+			// Obtener id del usuario actual desde token
+			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
+
+			if (_respuestasRepo.GetAll().Any(r => r.IdEncuesta == encuesta.Id))
+				return BadRequest("No se puede eliminar pregunta de una encuesta ya respondida.");
+
+			_preguntaRepo.Delete(id);
+			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
+
+			return Ok("Pregunta eliminada correctamente.");
+		}
+
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> EliminarEncuesta(int id)

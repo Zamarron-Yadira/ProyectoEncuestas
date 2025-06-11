@@ -76,23 +76,6 @@ namespace EncuestasAPI.Controllers
 		}
 
 
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> EliminarPregunta(int id)
-		{
-			var pregunta = _preguntaRepo.GetId(id);
-			if (pregunta == null)
-			{
-				return NotFound("La pregunta no existe.");
-			}
-
-			_preguntaRepo.Delete(pregunta);
-
-			// Notificar a los clientes conectados para actualizar estadísticas
-			await _hub.Clients.All.SendAsync("ActualizarEstadisticas");
-
-			return Ok("Pregunta eliminada correctamente.");
-		}
-
 	
 
 	}
