@@ -216,6 +216,7 @@
 
 .survey-info {
     flex: 1;
+    text-decoration: none;
 }
 
 .card-surv {

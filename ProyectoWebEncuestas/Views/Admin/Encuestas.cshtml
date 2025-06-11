@@ -64,7 +64,7 @@
 
             card.innerHTML = `
                 <div class="survey-card" data-fecha="${fechaISO}">
-                    <a href="/Admin/DetalleEncuestas?id=${encuesta.id}" class="survey-info">
+                    <a href="/Admin/VerAlumnosQueRespondieron?id=${encuesta.id}" class="survey-info">
                         <strong>${encuesta.titulo}</strong><br />
                         <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
                     </a>
