@@ -28,5 +28,13 @@ namespace EncuestasWeb.Controllers
 		{
 			return View();
 		}
+		public IActionResult VerAlumnosQueRespondieron()
+		{
+			return View();
+		}
+		public IActionResult VerRespuestasDeAlumno()
+		{
+			return View();
+		}
 	}
 }

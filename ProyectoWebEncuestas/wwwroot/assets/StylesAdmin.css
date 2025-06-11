@@ -143,6 +143,11 @@
 
 /* Contenido principal */
 .main-content {
+    padding: 0px 10px 10px;
+    max-width: 1000px;
+    margin: auto;
+}
+.main-content2 {
     padding: 80px 20px 20px;
     max-width: 1000px;
     margin: auto;
@@ -507,6 +512,133 @@
     color: #007bff;
     font-weight: bold;
 }
+.alumnos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.alumno-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+    .alumno-card:hover {
+        transform: scale(1.01);
+    }
+
+.alumno-info p {
+    margin: 4px 0;
+    font-size: 1rem;
+}
+
+.alumno-acciones {
+    flex-shrink: 0;
+}
+
+    .alumno-acciones .btn-primary {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+        .alumno-acciones .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+.subtitulo {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.respuestas {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin: 70px auto;
+}
+
+    .respuestas h2.seccion-titulo {
+        font-size: 1.3rem;
+        color: #007bff;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+.tarjeta-respuesta {
+    border: 1px solid #ddd;
+    border-left: 4px solid #007bff;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+}
+
+.pregunta {
+    font-weight: 600;
+    margin: 0 0 5px;
+    color: #222;
+}
+
+.respuesta {
+    margin: 0;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.numero-control {
+    color: #444;
+}
+
+.nombre-alumno {
+    color: #444;
+}
+
+.rating-labels {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.label-opcion.uno {
+    color: #d9534f; /* rojo suave */
+}
+
+.label-opcion.dos {
+    color: #f0ad4e; /* naranja */
+}
+
+.label-opcion.tres {
+    color: #f7e463; /* amarillo */
+}
+
+.label-opcion.cuatro {
+    color: #5bc0de; /* azul */
+}
+
+.label-opcion.cinco {
+    color: #5cb85c; /* verde */
+}
+
+
 
 
 .survey-header {
@@ -559,10 +691,7 @@
         font-size: 1.5rem;
     }
 
-    .encuestas-lista {
-        padding: 15px;
-        margin: 10px;
-    }
+
 
     .encuestas-ul li a {
         display: block;
@@ -610,4 +739,24 @@
             width: 80%;
             font-size: 1rem;
         }
+
+    .alumno-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .alumno-acciones {
+        align-self: flex-end;
+        width: 100%;
+    }
+
+        .alumno-acciones .btn-primary {
+            width: 100%;
+            text-align: center;
+        }
+
+    .rating-labels span {
+        font-size: 0.76rem;
+    }
 }
