@@ -1,0 +1,70 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+
+<main class="container">
+    <div class="form-group">
+        <p>Encuesta:</p>
+        <p class="survey-name-highlight" id="nombreEncuesta"></p>
+    </div>
+
+    <p class="warning-text">¿Estás seguro de que deseas eliminar esta encuesta? Esta acción no se puede deshacer.</p>
+
+    <div class="button-group">
+        <button class="submit-button" onclick="confirmarEliminacion()">Eliminar</button>
+        <button class="cancel-button" onclick="cancelar()">Cancelar</button>
+    </div>
+</main>
+
+
+<script>
+    const encuestaId = new URLSearchParams(window.location.search).get("id");
+    const token = localStorage.getItem("token");
+
+    // Obtener y mostrar el nombre de la encuesta
+    window.onload = function () {
+        fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${encuestaId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('No se pudo obtener la encuesta.');
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("nombreEncuesta").textContent = data.titulo;
+        })
+        .catch(error => {
+            console.error("Error al cargar la encuesta:", error);
+            document.getElementById("nombreEncuesta").textContent = "Encuesta no encontrada.";
+        });
+    };
+
+    function confirmarEliminacion() {
+        if (confirm("¿Realmente deseas eliminar esta encuesta?")) {
+            fetch(`https://apiencuestase8.websitos256.com/api/encuestas/${encuestaId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                alert("Encuesta eliminada correctamente.");
+                window.location.href = "/Admin/Index";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Ocurrió un error al eliminar la encuesta: ${error.message}`);
+            });
+        }
+    }
+
+    function cancelar() {
+        window.history.back();
+    }
+</script>

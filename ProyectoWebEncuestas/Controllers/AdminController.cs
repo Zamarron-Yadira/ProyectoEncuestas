@@ -16,6 +16,18 @@ namespace EncuestasWeb.Controllers
 		{
 			return View();
 		}
+		public IActionResult AgregarEncuestas()
+		{
+			return View();
+		}
+		public IActionResult EditarEncuestas()
+		{
+			return View();
+		}
+		public IActionResult EliminarEncuestas()
+		{
+			return View();
+		}
 		public IActionResult Usuarios()
 		{
 			return View();
@@ -28,6 +40,7 @@ namespace EncuestasWeb.Controllers
 		{
 			return View();
 		}
+
 		public IActionResult VerAlumnosQueRespondieron()
 		{
 			return View();
