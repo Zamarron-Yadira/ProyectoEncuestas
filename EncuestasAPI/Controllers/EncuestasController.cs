@@ -227,9 +227,17 @@ namespace EncuestasAPI.Controllers
 			if (encuesta == null)
 				return NotFound("La encuesta no existe.");
 
+
 			var idUsuario = int.Parse(User.FindFirst("Id")?.Value ?? "0");
 			if (encuesta.IdUsuario != idUsuario)
 				return Forbid("No tienes permiso para eliminar esta encuesta.");
+
+			// si alguien ya la contestó/aplico no se podrá editar
+			var respuestas = _respuestasRepo.GetAll().Where(r => r.IdEncuesta == id).ToList();
+			Console.WriteLine($"Respuestas encontradas para encuesta {id}: {respuestas.Count}");
+
+			if (respuestas.Any())
+				return BadRequest("No se puede eliminar una encuesta que ya ha sido respondida.");
 
 			_encuestaRepo.Delete(id);
 
