@@ -84,31 +84,12 @@
         });
 
 
-        // CHECAR CANCELAR
-        document.getElementById("btn-cancelar").addEventListener("click", async function (e) {
-            e.preventDefault(); 
+           document.getElementById("btn-cancelar").addEventListener("click", function (e) {
+        e.preventDefault();
+        localStorage.removeItem("idRespuesta");
+        window.location.href = "/Users/Index";
+           });
 
-            const idRespuesta = localStorage.getItem("idRespuesta");
-            const token = localStorage.getItem("token");
-
-            if (idRespuesta && token) {
-                try {
-                    await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                } catch (err) {
-                    console.error("Error cancelando en el servidor:", err);
-                }
-            }
-
-            localStorage.removeItem("idRespuesta");
-
-
-            window.location.href = "/Users/Index";
-        });
 
       }
     });

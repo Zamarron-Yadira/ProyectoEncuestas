@@ -78,12 +78,12 @@ connection.start()
     .then(() => {
         console.log("✅ Conectado a SignalR");
 
-        // ✅ Ahora sí puedes invocar al método del Hub
+     
         connection.invoke("GetUsuariosActivos")
             .then(data => {
                 console.log("Usuarios activos actuales:", data);
 
-                // Mostrar los usuarios activos en la lista
+                // Donde mostramos los usuarios contestando/activos
                 const lista = document.getElementById("lista-usuarios");
                 lista.innerHTML = "";
 
@@ -99,12 +99,12 @@ connection.start()
                 });
             })
             .catch(err => {
-                console.error("❌ Error al invocar GetUsuariosActivos:", err);
+                console.error("Error al invocar GetUsuariosActivos:", err);
             });
 
     })
     .catch(err => {
-        console.error("❌ Error al conectar a SignalR:", err);
+        console.error("Error al conectar a SignalR:", err);
     });
 
 
@@ -117,7 +117,7 @@ connection.start()
             const data = await res.json();
             document.getElementById("stat-respondidas").innerText = data;
         } catch (err) {
-            console.error("❌ Error totalrespondidas:", err);
+            console.error("Error totalrespondidas:", err);
             document.getElementById("stat-respondidas").innerText = "Error";
         }
     }
@@ -131,7 +131,7 @@ connection.start()
             const data = await res.json();
             document.getElementById("stat-pendientes").innerText = data;
         } catch (err) {
-            console.error("❌ Error totalnorespondidas:", err);
+            console.error("Error totalnorespondidas:", err);
             document.getElementById("stat-pendientes").innerText = "Error";
         }
     }
@@ -173,7 +173,7 @@ connection.start()
 
             const encuestas = await res.json();
             const listaEncuestas = document.querySelector(".encuestas-ul");
-            listaEncuestas.innerHTML = ""; // Limpiar lista anterior
+            listaEncuestas.innerHTML = "";
 
             if (encuestas.length === 0) {
                 listaEncuestas.innerHTML = "<li><em>No hay encuestas disponibles</em></li>";
@@ -191,7 +191,7 @@ connection.start()
         });
 
         } catch (err) {
-            console.error("❌ Error al cargar encuestas con respuestas:", err);
+            console.error("Error al cargar encuestas con respuestas:", err);
         }
     }
 

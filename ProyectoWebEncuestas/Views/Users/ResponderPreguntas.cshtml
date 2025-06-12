@@ -45,23 +45,40 @@
             await enviarRespuestas(idRespuesta, token);
         });
 
-        document.querySelector(".cancel-button").addEventListener("click", async () => {
-            const confirmar = confirm("¿Cancelar la encuesta?");
-            if (!confirmar) return;
+            document.querySelector(".cancel-button").addEventListener("click", async () => {
+        const confirmar = confirm("¿Cancelar la encuesta?");
+        if (!confirmar) return;
 
-            try {
-                await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
-                    method: "DELETE",
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                localStorage.removeItem("idRespuesta");
-                window.location.href = "/Users/Index";
-            } catch (err) {
-                console.error(err);
-                alert("Error al cancelar la encuesta.");
+        console.log("Intentando cancelar encuesta con idRespuesta:", idRespuesta);
+        console.log("Token:", token);
+
+        if (!idRespuesta || !token) {
+            alert("Faltan datos para cancelar la encuesta.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
+                method: "DELETE",
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Respuesta del servidor:", errorText);
+                throw new Error("Error al cancelar en el servidor.");
             }
-        });
-    });
+
+            localStorage.removeItem("idRespuesta");
+            window.location.href = "/Users/Index";
+        } catch (err) {
+            console.error(err);
+            alert("Error al cancelar la encuesta.");
+        }
+      });
+
+
+   });
 
     async function cargarPreguntas(encuestaId, token) {
         const container = document.getElementById("questionsContainer");
@@ -150,7 +167,7 @@
 
             alert("¡Gracias por responder!");
             localStorage.removeItem("idRespuesta");
-            window.location.href = "/Users/Index"; // o a donde necesites redirigir
+            window.location.href = "/Users/Index"; 
         } catch (err) {
             console.error(err);
             alert("Hubo un problema al enviar las respuestas.");
