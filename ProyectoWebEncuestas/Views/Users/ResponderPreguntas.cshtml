@@ -26,18 +26,23 @@
     </form>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
+    let connection;
+
     document.addEventListener("DOMContentLoaded", async () => {
         const encuestaId = new URLSearchParams(window.location.search).get("id");
         const idRespuesta = localStorage.getItem("idRespuesta");
         const token = localStorage.getItem("token");
+        const nombreAlumno = localStorage.getItem("nombreAlumno");
 
-        if (!encuestaId || !idRespuesta || !token) {
+        if (!encuestaId || !idRespuesta || !token || !nombreAlumno) {
             alert("Datos de sesión incompletos.");
             window.location.href = "/Users/Index";
             return;
         }
 
+        await conectarSignalR(nombreAlumno);
         await cargarPreguntas(encuestaId, token);
 
         document.getElementById("surveyForm").addEventListener("submit", async (e) => {
@@ -45,40 +50,53 @@
             await enviarRespuestas(idRespuesta, token);
         });
 
-            document.querySelector(".cancel-button").addEventListener("click", async () => {
-        const confirmar = confirm("¿Cancelar la encuesta?");
-        if (!confirmar) return;
+        document.querySelector(".cancel-button").addEventListener("click", async () => {
+            const confirmar = confirm("¿Cancelar la encuesta?");
+            if (!confirmar) return;
 
-        console.log("Intentando cancelar encuesta con idRespuesta:", idRespuesta);
-        console.log("Token:", token);
+            try {
+                const res = await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
+                    method: "DELETE",
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        if (!idRespuesta || !token) {
-            alert("Faltan datos para cancelar la encuesta.");
-            return;
-        }
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Respuesta del servidor:", errorText);
+                    throw new Error("Error al cancelar en el servidor.");
+                }
+
+                localStorage.removeItem("idRespuesta");
+                localStorage.removeItem("nombreAlumno");
+                if (connection) await connection.stop();
+                window.location.href = "/Users/Index";
+            } catch (err) {
+                console.error(err);
+                alert("Error al cancelar la encuesta.");
+            }
+        });
+    });
+
+    async function conectarSignalR(nombreAlumno) {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://apiencuestase8.websitos256.com/hubs/estadisticas")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.onclose(err => {
+            console.warn("Desconectado de SignalR", err);
+        });
 
         try {
-            const res = await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
-                method: "DELETE",
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            await connection.start();
+            console.log("Conectado al hub");
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Respuesta del servidor:", errorText);
-                throw new Error("Error al cancelar en el servidor.");
-            }
-
-            localStorage.removeItem("idRespuesta");
-            window.location.href = "/Users/Index";
+            // enviar el alumno contestando para signalR
+            await connection.invoke("RegistrarAlumno", nombreAlumno);
         } catch (err) {
-            console.error(err);
-            alert("Error al cancelar la encuesta.");
+            console.error("Error al conectar con SignalR:", err);
         }
-      });
-
-
-   });
+    }
 
     async function cargarPreguntas(encuestaId, token) {
         const container = document.getElementById("questionsContainer");
@@ -167,7 +185,12 @@
 
             alert("¡Gracias por responder!");
             localStorage.removeItem("idRespuesta");
-            window.location.href = "/Users/Index"; 
+            localStorage.removeItem("nombreAlumno");
+
+            // Desconectar del hub antes de salir
+            if (connection) await connection.stop();
+
+            window.location.href = "/Users/Index";
         } catch (err) {
             console.error(err);
             alert("Hubo un problema al enviar las respuestas.");

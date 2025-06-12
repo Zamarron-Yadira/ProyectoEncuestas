@@ -38,7 +38,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
-       const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     const baseApiUrl = "https://apiencuestase8.websitos256.com";
 
     const connection = new signalR.HubConnectionBuilder()
@@ -48,17 +48,8 @@
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-    connection.on("ActualizarEstadisticas", () => {
-        console.log(" Evento: ActualizarEstadisticas");
-        cargarTotalRespondidas();
-        cargarTotalPendientes();
-        cargarPromedioRespuestas();
-        cargarTotalEntrevistados();
-        cargarEncuestasConRespuestas();
-    });
-
-
-        connection.on("UsuariosActivos", (usuarios) => {
+    //cargar usuarios activos 
+    function renderizarUsuariosActivos(usuarios) {
         const lista = document.getElementById("lista-usuarios");
         lista.innerHTML = "";
 
@@ -72,41 +63,32 @@
             li.innerHTML = `<span>${nombre}</span>`;
             lista.appendChild(li);
         });
+    }
+
+    connection.on("ActualizarEstadisticas", () => {
+        console.log("Evento: ActualizarEstadisticas");
+        cargarTotalRespondidas();
+        cargarTotalPendientes();
+        cargarPromedioRespuestas();
+        cargarTotalEntrevistados();
+        cargarEncuestasConRespuestas();
     });
 
-connection.start()
-    .then(() => {
-        console.log("✅ Conectado a SignalR");
+    connection.on("UsuariosActivos", renderizarUsuariosActivos);
 
-     
-        connection.invoke("GetUsuariosActivos")
-            .then(data => {
-                console.log("Usuarios activos actuales:", data);
+    connection.start()
+        .then(() => {
+            console.log("Conectado a SignalR");
 
-                // Donde mostramos los usuarios contestando/activos
-                const lista = document.getElementById("lista-usuarios");
-                lista.innerHTML = "";
-
-                if (!data || data.length === 0) {
-                    lista.innerHTML = "<li><em>No hay usuarios activos</em></li>";
-                    return;
-                }
-
-                data.forEach(nombre => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `<span>${nombre}</span>`;
-                    lista.appendChild(li);
+            connection.invoke("GetUsuariosActivos")
+                .then(renderizarUsuariosActivos)
+                .catch(err => {
+                    console.error("Error al invocar GetUsuariosActivos:", err);
                 });
-            })
-            .catch(err => {
-                console.error("Error al invocar GetUsuariosActivos:", err);
-            });
-
-    })
-    .catch(err => {
-        console.error("Error al conectar a SignalR:", err);
-    });
-
+        })
+        .catch(err => {
+            console.error("Error al conectar a SignalR:", err);
+        });
 
     async function cargarTotalRespondidas() {
         try {
@@ -145,7 +127,7 @@ connection.start()
             const data = await res.json();
             document.getElementById("stat-promedio").innerText = data;
         } catch (err) {
-            console.error(" Error promedioRespuestasPorEncuesta:", err);
+            console.error("Error promedioRespuestasPorEncuesta:", err);
             document.getElementById("stat-promedio").innerText = "Error";
         }
     }
@@ -163,6 +145,7 @@ connection.start()
             document.getElementById("stat-entrevistados").innerText = "Error";
         }
     }
+
     async function cargarEncuestasConRespuestas() {
         try {
             const res = await fetch(`${baseApiUrl}/api/encuestas/EncuestaConTotalRespuestas`, {
@@ -180,15 +163,15 @@ connection.start()
                 return;
             }
 
-           encuestas.slice(0, 10).forEach(encuesta => {
-            const li = document.createElement("li");
-            li.classList.add("encuesta-item");
-            li.innerHTML = `
-                <span class="nombre-encuesta">${encuesta.nombreEncuesta}</span>
-                <span class="contador-respuestas">${encuesta.totalRespuestas} respuestas</span>
-            `;
-            listaEncuestas.appendChild(li);
-        });
+            encuestas.slice(0, 10).forEach(encuesta => {
+                const li = document.createElement("li");
+                li.classList.add("encuesta-item");
+                li.innerHTML = `
+                    <span class="nombre-encuesta">${encuesta.nombreEncuesta}</span>
+                    <span class="contador-respuestas">${encuesta.totalRespuestas} respuestas</span>
+                `;
+                listaEncuestas.appendChild(li);
+            });
 
         } catch (err) {
             console.error("Error al cargar encuestas con respuestas:", err);

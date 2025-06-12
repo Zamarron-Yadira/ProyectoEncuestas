@@ -76,7 +76,7 @@
             const idRespuesta = data.idRespuesta;
 
             localStorage.setItem("idRespuesta", idRespuesta);
-
+            localStorage.setItem("nombreAlumno", nombre);
             window.location.href = `/Users/ResponderPreguntas?id=${encuestaId}`;
           } catch (error) {
             alert(error.message);
@@ -87,6 +87,7 @@
            document.getElementById("btn-cancelar").addEventListener("click", function (e) {
         e.preventDefault();
         localStorage.removeItem("idRespuesta");
+        localStorage.removeItem("nombreAlumno");
         window.location.href = "/Users/Index";
            });
 
