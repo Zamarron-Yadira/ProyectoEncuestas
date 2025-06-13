@@ -34,7 +34,7 @@ namespace EncuestasAPI.Repositories
 			if (totalEncuestas == 0) return 0;
 
 			var totalRespuestas = GetTotalEncuestasRespondidas();
-			return (double)totalRespuestas / totalEncuestas;
+			return Math.Round((double)totalRespuestas / totalEncuestas, 2);
 		}
 		public int GetTotalAlumnosEntrevistados()
 		{

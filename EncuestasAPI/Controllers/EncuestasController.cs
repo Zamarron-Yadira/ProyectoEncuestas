@@ -250,6 +250,24 @@ namespace EncuestasAPI.Controllers
 
 		}
 
+		[HttpGet("{id}/alumnos")]
+		public IActionResult GetAlumnosQueRespondieronEncuesta(int id)
+		{
+			var respuestas = _respuestasRepo.GetAll()
+				.Where(r => r.IdEncuesta == id)
+				.Select(r => new { r.NombreAlumno, r.Id })
+				.Distinct()
+				.ToList();
+
+			var alumnos = respuestas.Select(r => new AlumnoRespondioDTO
+			{
+				IdAlumno = r.Id,
+				Nombre = r.NombreAlumno
+			}).ToList();
+
+			return Ok(alumnos);
+		}
+
 
 		[Authorize(Roles = "Admin")]
 		[HttpGet("totalencuestas")]
