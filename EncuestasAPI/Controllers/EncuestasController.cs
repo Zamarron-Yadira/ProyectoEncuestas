@@ -255,14 +255,15 @@ namespace EncuestasAPI.Controllers
 		{
 			var respuestas = _respuestasRepo.GetAll()
 				.Where(r => r.IdEncuesta == id)
-				.Select(r => new { r.NombreAlumno, r.Id })
+				.Select(r => new { r.NombreAlumno, r.Id, r.NumControlAlumno })
 				.Distinct()
 				.ToList();
 
 			var alumnos = respuestas.Select(r => new AlumnoRespondioDTO
 			{
 				IdAlumno = r.Id,
-				Nombre = r.NombreAlumno
+				Nombre = r.NombreAlumno,
+				NumeroControl = r.NumControlAlumno
 			}).ToList();
 
 			return Ok(alumnos);

@@ -4,5 +4,6 @@
 	{
 		public int IdAlumno { get; set; }
 		public string Nombre { get; set; }
+		public string NumeroControl { get; set; }
 	}
 }
