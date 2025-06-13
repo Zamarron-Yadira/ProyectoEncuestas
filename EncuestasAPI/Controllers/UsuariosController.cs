@@ -123,8 +123,12 @@ namespace EncuestasAPI.Controllers
 	        }
 
 
-			var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
-	       if (usuario == null)
+			//var usuario = RepoUsuarios.GetAll().FirstOrDefault(u => u.Nombre == dto.Nombre && u.Contrasena == dto.Contrasena);
+			var usuario = RepoUsuarios.GetAll().FirstOrDefault(u =>
+				u.Nombre.Trim().ToLower() == dto.Nombre.Trim().ToLower() &&
+				u.Contrasena.Trim() == dto.Contrasena.Trim());
+
+			if (usuario == null)
 			{
 				return Unauthorized("El usuario o contraseña son incorrectos");
 			}

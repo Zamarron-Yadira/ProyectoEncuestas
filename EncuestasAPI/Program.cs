@@ -106,7 +106,7 @@ builder.Services.AddCors(options =>
 		policy =>
 		{
 			policy
-				.WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com")
+				.WithOrigins("https://localhost:7058", "https://apiencuestase8.websitos256.com", "https://EncuestasITESRC.websitos256.com")
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 			.AllowCredentials();
