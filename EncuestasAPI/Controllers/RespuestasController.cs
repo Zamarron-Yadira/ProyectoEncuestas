@@ -57,6 +57,11 @@ namespace EncuestasAPI.Controllers
 		[HttpPost("registrarInicio")]
 		public async Task <IActionResult> RegistrarInicio([FromBody] RespuestaDTO dto)
 		{
+			var regex = new System.Text.RegularExpressions.Regex(@"^[0-9]{3}[A-Za-z]{1}[0-9]{4}$");
+			if (!regex.IsMatch(dto.NumControlAlumno))
+			{
+				return BadRequest("Por favor verifique su número de control.");
+			}
 			// Validar si ya respondió la encuesta
 			var yaRespondio = RespuestasRepository.GetAll().Any(r =>
 				r.IdEncuesta == dto.IdEncuesta &&

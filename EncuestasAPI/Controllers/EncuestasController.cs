@@ -268,32 +268,6 @@ namespace EncuestasAPI.Controllers
 
 			return Ok(alumnos);
 		}
-		//[HttpGet("{idEncuesta}/alumno/{idAlumno}/respuestas")]
-		//public IActionResult GetPreguntasConRespuestasPorAlumno(int idEncuesta, int idAlumno)
-		//{
-		//	var detallesRespuestas = _encuestaRepo.GetDetallesPorEncuestaYAlumno(idEncuesta, idAlumno);
-
-		//	if (!detallesRespuestas.Any())
-		//		return NotFound("No se encontraron respuestas para ese alumno y encuesta.");
-
-		//	var primerDetalle = detallesRespuestas.First();
-
-		//	var dto = new PreguntasConRespuestaPorAlumnoDTO
-		//	{
-		//		IdEncuesta = idEncuesta,
-		//		IdAlumno = idAlumno,
-		//		NumeroControl = primerDetalle.IdRespuestaNavigation.NumControlAlumno,
-		//		Nombre = primerDetalle.IdRespuestaNavigation.NombreAlumno,
-		//		Preguntas = detallesRespuestas.Select(dr => new PreguntasConRespuestaPorAlumnoDTO.PreguntaConRespuestaDTO
-		//		{
-		//			IdPregunta = dr.IdPregunta,
-		//			Descripcion = dr.IdPreguntaNavigation.Descripcion,
-		//			ValorRespuesta = dr.ValorEvaluacion
-		//		}).ToList()
-		//	};
-
-		//	return Ok(dto);
-		//}
 
 		[HttpGet("{idEncuesta}/alumno/{idAlumno}/respuestas")]
 		public IActionResult GetPreguntasConRespuestasPorAlumno(int idEncuesta, int idAlumno)
