@@ -49,6 +49,37 @@ namespace EncuestasAPI.Repositories
 		
 
 		}
+		public List<Detallerespuestas> GetDetallesPorEncuestaYAlumno(int idEncuesta, int idAlumno)
+		{
+			// Primero obtenemos las respuestas del alumno para la encuesta
+			var respuestasAlumno = Context.Respuestas
+				.Where(r => r.IdEncuesta == idEncuesta && r.Id == idAlumno)
+				.Select(r => r.Id)
+				.ToList();
+
+			if (!respuestasAlumno.Any())
+				return new List<Detallerespuestas>();
+
+			// Luego traemos los detalles incluyendo las preguntas
+			var detalles = Context.Detallerespuestas
+				.Include(dr => dr.IdPreguntaNavigation)
+				.Include(d => d.IdRespuestaNavigation)
+				.Where(dr => respuestasAlumno.Contains(dr.IdRespuesta))
+				.ToList();
+
+			return detalles;
+		}
+		//public IEnumerable<Detallerespuestas> GetDetallesPorEncuestaYAlumno(int idEncuesta, int idAlumno)
+		//{
+		//	return _context.Detallerespuestas
+		//		.Include(d => d.IdRespuestaNavigation)
+		//		.Include(d => d.IdPreguntaNavigation)
+		//		.Where(d => d.IdRespuestaNavigation.IdEncuesta == idEncuesta
+		//				 && d.IdRespuestaNavigation.IdAlumno == idAlumno)
+		//		.ToList();
+		//}
+
+
 		//CRUD	
 		public void Insert(T entity)
 		{
