@@ -137,13 +137,7 @@ namespace EncuestasAPI.Controllers
 			if (respuesta == null)
 				return NotFound("Registro no encontrado.");
 
-			// Si tienes relaciones con Detallerespuestas, elimina primero sus hijos
-			var detalles = RepoDetalles.GetAll().Where(d => d.IdRespuesta == idRespuesta).ToList();
-			foreach (var d in detalles)
-			{
-				RepoDetalles.Delete(d);
-			}
-
+			
 			RespuestasRepository.Delete(respuesta);
 
 			return Ok(new { mensaje = "Respuesta cancelada correctamente." });

@@ -49,33 +49,42 @@
             e.preventDefault();
             await enviarRespuestas(idRespuesta, token);
         });
-
-        document.querySelector(".cancel-button").addEventListener("click", async () => {
-            const confirmar = confirm("¿Cancelar la encuesta?");
-            if (!confirmar) return;
-
-            try {
-                const res = await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
-                    method: "DELETE",
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error("Respuesta del servidor:", errorText);
-                    throw new Error("Error al cancelar en el servidor.");
-                }
-
-                localStorage.removeItem("idRespuesta");
-                localStorage.removeItem("nombreAlumno");
-                if (connection) await connection.stop();
-                window.location.href = "/Users/Index";
-            } catch (err) {
-                console.error(err);
-                alert("Error al cancelar la encuesta.");
-            }
-        });
     });
+
+    async function cancelSurvey() {
+        const confirmar = confirm("¿Cancelar la encuesta?");
+        if (!confirmar) return;
+
+        const idRespuesta = localStorage.getItem("idRespuesta");
+        const token = localStorage.getItem("token");
+
+        if (!idRespuesta || isNaN(parseInt(idRespuesta)) || !token) {
+            alert("Error: ID de respuesta o token no válido.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`https://apiencuestase8.websitos256.com/api/respuestas/cancelar/${idRespuesta}`, {
+                method: "DELETE",
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Respuesta del servidor:", errorText);
+                throw new Error(errorText || "Error desconocido al cancelar.");
+            }
+
+            localStorage.removeItem("idRespuesta");
+            localStorage.removeItem("nombreAlumno");
+
+            if (connection) await connection.stop();
+            window.location.href = "/Users/Index";
+        } catch (err) {
+            console.error(err);
+            alert("Error al cancelar la encuesta: " + err.message);
+        }
+    }
 
     async function conectarSignalR(nombreAlumno) {
         connection = new signalR.HubConnectionBuilder()
@@ -91,7 +100,6 @@
             await connection.start();
             console.log("Conectado al hub");
 
-            // enviar el alumno contestando para signalR
             await connection.invoke("RegistrarAlumno", nombreAlumno);
         } catch (err) {
             console.error("Error al conectar con SignalR:", err);
@@ -187,13 +195,11 @@
             localStorage.removeItem("idRespuesta");
             localStorage.removeItem("nombreAlumno");
 
-            // Desconectar del hub antes de salir
             if (connection) await connection.stop();
-
             window.location.href = "/Users/Index";
         } catch (err) {
             console.error(err);
-            alert("Hubo un problema al enviar las respuestas.");
+            alert("Hubo un problema al enviar las respuestas: " + err.message);
         }
     }
 </script>
