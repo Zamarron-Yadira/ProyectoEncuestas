@@ -39,6 +39,7 @@
     document.querySelector('.login-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
+
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
@@ -58,6 +59,13 @@
             if (response.ok) {
         const data = await response.json();
         console.log("Login success:", data);
+     localStorage.removeItem("idRespuesta");
+     localStorage.removeItem("esAdmin");
+      localStorage.removeItem("idUsuario");
+       localStorage.removeItem("nombre");
+       localStorage.removeItem("token");
+       localStorage.removeItem("nombreAlumno");
+
 
         localStorage.setItem("token", data.token);
         localStorage.setItem("esAdmin", data.esAdmin);

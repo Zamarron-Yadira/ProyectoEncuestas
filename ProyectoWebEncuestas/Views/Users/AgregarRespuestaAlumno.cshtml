@@ -71,8 +71,10 @@
 
               return;
             }
-
+            localStorage.removeItem("nombreAlumno");
+            localStorage.removeItem("idRespuesta");
             const data = await response.json();
+
             const idRespuesta = data.idRespuesta;
 
             localStorage.setItem("idRespuesta", idRespuesta);

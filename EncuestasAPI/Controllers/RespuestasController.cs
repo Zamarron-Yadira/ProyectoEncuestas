@@ -138,7 +138,7 @@ namespace EncuestasAPI.Controllers
 				return NotFound("Registro no encontrado.");
 
 			
-			RespuestasRepository.Delete(respuesta);
+			RespuestasRepository.Delete(idRespuesta);
 
 			return Ok(new { mensaje = "Respuesta cancelada correctamente." });
 		}
