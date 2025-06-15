@@ -557,39 +557,29 @@ body {
 }
 
 @media (max-width: 600px) {
-  .question-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .question-text, .rating-options {
-    flex: 1 1 100%;
-  }
-	 .rating-labels span {
-    font-size: 0.8rem;
-  }
-
-  .rating-options {
-    justify-content: flex-start;
-    gap: 15px;
-  }
-   
-}
-
-
-@media (max-width: 600px) {
   .page-title {
-    font-size: 0.85rem; 
+    font-size: 1rem; 
   }
 
   .survey-subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
     .question-item {
         flex-direction: column;
         align-items: flex-start;
     }
+    .question-text, .rating-options {
+        flex: 1 1 100%;
+    }
 
+    .rating-labels span {
+        font-size: 0.8rem;
+    }
+
+    .rating-options {
+        justify-content: flex-start;
+        gap: 15px;
+    }
     .question-input-wrapper {
         flex-direction: column;
         align-items: stretch;
@@ -601,10 +591,19 @@ body {
     }
 
     .delete-buttonn {
-        align-self: flex-start;
-        margin-top: -49px;
-        margin-left: 70px;
+        margin-top: -48px;
+        margin-right: 120px;
     }
+    .survey-info2 {
+        height:80px;
+    }
+
+    .survey-actions {
+        margin-top: 55px;
+        margin-right: 180px;
+    }
+
+
 }
 
 
@@ -709,4 +708,3 @@ input[type="text"] {
     .btn-clear-filter:hover {
         background-color: #5a6268;
     }
-

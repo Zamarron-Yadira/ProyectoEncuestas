@@ -218,6 +218,10 @@
     flex: 1;
     text-decoration: none;
 }
+.survey-info2 {
+    flex: 1;
+    text-decoration: none;
+}
 
 .card-surv {
     position: relative;
@@ -913,6 +917,55 @@
         font-size: 0.76rem;
     }
 
+    .page-title {
+        font-size: 1rem;
+    }
+
+    .survey-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .question-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .question-text, .rating-options {
+        flex: 1 1 100%;
+    }
+
+    .rating-labels span {
+        font-size: 0.8rem;
+    }
+
+    .rating-options {
+        justify-content: flex-start;
+        gap: 15px;
+    }
+
+    .question-input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .text-input-group,
+    .number-input-group {
+        width: 100%;
+    }
+
+    .delete-buttonn {
+        margin-top: -48px;
+        margin-right: 120px;
+    }
+
+    .survey-info2 {
+        height: 80px;
+    }
+
+    .survey-actions {
+        margin-top: 55px;
+        margin-right: 180px;
+    }
    
 
 
