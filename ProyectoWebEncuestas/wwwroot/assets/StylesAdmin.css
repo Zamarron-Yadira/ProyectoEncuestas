@@ -221,6 +221,7 @@
 .survey-info2 {
     flex: 1;
     text-decoration: none;
+      color: black;
 }
 
 .card-surv {
@@ -234,6 +235,7 @@
     right: 12px;
     display: flex;
     gap: 8px;
+    text-decoration: none;
 }
 
 
@@ -274,7 +276,7 @@
 
 .active-users {
     background-color: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     margin:5px;
@@ -286,31 +288,41 @@
         color: #333;
     }
 
-
+.table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
 
 .user-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px; 
-    margin-top: 1rem;
-    font-family: sans-serif;
+    border-collapse: collapse;
 }
-    .user-table th,
-    .user-table td {
-        border: 1px solid #ccc;
-        padding: 14px 20px; 
-        text-align: left;
-        background-color: #fff;
-        line-height: 1.6;
-        vertical-align: middle;
-        margin:5px;
+
+    .user-table th, .user-table td {
+        padding: 12px;
+        text-align: center; 
+        border-bottom: 1px solid #ddd;
     }
 
     .user-table th {
-        background-color: #f4f4f4;
-        font-size: 1rem;
-        font-weight: bold;
+        background-color: #f2f2f2;
     }
+
+    .user-table td {
+        vertical-align: middle;
+    }
+
+.delete-btn {
+    color: red; 
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .user-table th, .user-table td {
+        font-size: 14px;
+    }
+}
 
 .encuestas-lista {
     background-color: white;
@@ -357,7 +369,7 @@
 .edit-btn, .delete-btn {
     background: none;
     border: none;
-    color: #d32f2f;
+    text-decoration:none;
     font-size: 1.2rem;
     cursor: pointer;
     margin-left: auto;
@@ -746,7 +758,7 @@
     }
     .text-input-group input,
     .number-input-group input {
-        width: 100%;
+        width: 98%;
         padding: 10px 10px;
         font-size: 1rem;
         border: 1px solid #ccc;
@@ -754,7 +766,7 @@
     }
     .text-input-group {
         flex: 3;
-        min-width: 230px;
+        min-width: 220px;
         max-width: 90%;
         flex-basis: 60%;
     }
@@ -954,19 +966,25 @@
     }
 
     .delete-buttonn {
-        margin-top: -48px;
-        margin-right: 120px;
+        margin-top: 0px;
+        margin-left: 0px;
     }
 
     .survey-info2 {
-        height: 80px;
+        height: 87px;
+        padding-bottom: 10px;
+        color: black;
     }
 
     .survey-actions {
-        margin-top: 55px;
-        margin-right: 180px;
+        margin-top: 74px;
+        margin-right: 160px;
+        text-decoration: none;
     }
-   
+    .tituloencuestas {
+        font-size: 1.2rem;
+
+    }
 
 
 }
