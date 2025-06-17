@@ -557,9 +557,22 @@ body {
 }
 
 @media (max-width: 600px) {
-  .page-title {
-    font-size: 1rem; 
-  }
+    .page-title {
+        font-size: 1rem;
+    }
+
+    .menu-content {
+        max-height: 100vh;
+        overflow-y: auto; /* permite hacer scroll si es necesario */
+    }
+
+    .logout-link {
+        position: relative;
+        margin-top: auto;
+        margin-bottom: 20px;
+        flex-shrink: 0; /* evita que se encoja */
+    }
+
 
   .survey-subtitle {
     font-size: 0.95rem;
@@ -602,8 +615,6 @@ body {
         margin-top: 55px;
         margin-right: 180px;
     }
-
-
 }
 
 

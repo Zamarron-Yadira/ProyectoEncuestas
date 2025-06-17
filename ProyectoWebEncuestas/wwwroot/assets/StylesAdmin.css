@@ -399,7 +399,6 @@
         background-color: #218838;
     }
 
-/* Alinear correctamente el contenido de la lista de usuarios */
 .user-list li {
     display: flex;
     align-items: center;
@@ -407,7 +406,6 @@
     justify-content: space-between;
 }
 
-/* Botón flotante para agregar */
 .fab-add-user {
     position: fixed;
     bottom: 20px;
@@ -860,6 +858,17 @@
         font-size: 1.5rem;
     }
 
+    .menu-content {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .logout-link {
+        position: relative;
+        margin-top: auto;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+    }
 
 
     .encuestas-ul li a {
@@ -981,10 +990,8 @@
         margin-right: 160px;
         text-decoration: none;
     }
+
     .tituloencuestas {
         font-size: 1.2rem;
-
     }
-
-
 }

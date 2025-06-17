@@ -250,6 +250,7 @@ namespace EncuestasAPI.Controllers
 
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpGet("{id}/alumnos")]
 		public IActionResult GetAlumnosQueRespondieronEncuesta(int id)
 		{
@@ -269,6 +270,7 @@ namespace EncuestasAPI.Controllers
 			return Ok(alumnos);
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpGet("{idEncuesta}/alumno/{idAlumno}/respuestas")]
 		public IActionResult GetPreguntasConRespuestasPorAlumno(int idEncuesta, int idAlumno)
 		{

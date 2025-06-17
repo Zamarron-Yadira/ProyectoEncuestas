@@ -21,9 +21,114 @@
     </div>
 	
 </main>
-  
+<!-- SignalR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
-      <script>
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "/Login";
+    }
+
+    const baseApiUrl = "https://apiencuestase8.websitos256.com";
+
+    async function cargarEncuestas() {
+        try {
+            const response = await fetch(`${baseApiUrl}/api/encuestas/encuestas`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudieron cargar las encuestas");
+            }
+
+            const encuestas = await response.json();
+            const container = document.getElementById("encuestasContainer");
+            container.innerHTML = "";
+
+            encuestas.forEach(encuesta => {
+                const card = document.createElement("div");
+                card.className = "card-surv";
+
+                const fechaISO = new Date(encuesta.fechaCreacion).toISOString().split("T")[0];
+
+                card.innerHTML = `
+                    <a href="DetalleEncuesta?id=${encuesta.id}" class="survey-card" data-fecha="${fechaISO}">
+                        <div class="survey-info">
+                            <strong>${encuesta.titulo}</strong><br />
+                            <small>Creada el ${new Date(encuesta.fechaCreacion).toLocaleDateString()}</small>
+                        </div>
+                    </a>
+                `;
+
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Error al cargar las encuestas. Revise su conexión a internet");
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        cargarEncuestas();
+        iniciarSignalR();
+    });
+
+    // Filtro por fecha
+    const fechaInput = document.getElementById('fechaFiltro');
+    const btnQuitarFiltro = document.getElementById('quitarFiltro');
+    btnQuitarFiltro.style.display = 'none';
+
+    fechaInput.addEventListener('input', function () {
+        const filtro = this.value;
+        const encuestas = document.querySelectorAll('#encuestasContainer .survey-card');
+
+        btnQuitarFiltro.style.display = filtro ? 'inline' : 'none';
+
+        encuestas.forEach(encuesta => {
+            const fecha = encuesta.getAttribute('data-fecha');
+            encuesta.style.display = !filtro || fecha.startsWith(filtro) ? 'block' : 'none';
+        });
+    });
+
+    btnQuitarFiltro.addEventListener('click', function () {
+        fechaInput.value = "";
+        this.style.display = 'none';
+
+        const encuestas = document.querySelectorAll('#encuestasContainer .survey-card');
+        encuestas.forEach(encuesta => {
+            encuesta.style.display = 'block';
+        });
+    });
+
+    // SignalR para recargar encuestas automáticamente
+    function iniciarSignalR() {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${baseApiUrl}/hubs/estadisticas`, {
+                accessTokenFactory: () => token
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.on("ActualizarEstadisticas", () => {
+            console.log("📡 Evento recibido: ActualizarEstadisticas");
+            cargarEncuestas(); // recargar lista
+        });
+
+        connection.start()
+            .then(() => {
+                console.log("✅ Conectado a SignalR (Encuestas)");
+            })
+            .catch(err => {
+                console.error("❌ Error al conectar a SignalR:", err);
+            });
+    }
+</script>
+
+ @* <script>
     const token = localStorage.getItem("token");
      if (!token) {
           window.location.href = "/Login";
@@ -115,3 +220,4 @@
 
 </script>
 
+ *@
